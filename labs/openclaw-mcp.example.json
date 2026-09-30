@@ -1,0 +1,21 @@
+{
+  "OpenClaw": {
+    "Plugins": {
+      "Enabled": true,
+      "Mcp": {
+        "Enabled": true,
+        "Servers": {
+          "industrial-study": {
+            "Enabled": true,
+            "Name": "Industrial controls study lab",
+            "Transport": "http",
+            "Url": "http://localhost:5088/mcp",
+            "ToolNamePrefix": "industrial_",
+            "StartupTimeoutSeconds": 15,
+            "RequestTimeoutSeconds": 30
+          }
+        }
+      }
+    }
+  }
+}

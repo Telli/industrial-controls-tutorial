@@ -1,0 +1,114 @@
+Article 02 of 12 · Original series
+
+Choosing Modbus, OPC UA and MQTT for a C# application
+
+Expanded English study edition · About 1,452 words · 8 minute read, plus practice
+
+This is an independently written companion to Wackysoft’s article published 2026-08-04. The brief summary below describes the source; the expanded teaching material is original and is not a full translation.
+
+Read the original source (https://www.cnblogs.com/wackysoft/p/22188247)
+
+Brief English source summary
+
+This article compares Modbus with OPC UA, introduces their different data models and describes simulation as a way to learn without purchasing hardware. It also highlights timeouts, reconnection and representation errors as recurring integration concerns.
+
+Choose the right connection
+
+Write a device contract before choosing a package. Identify the exact controller model and firmware, accessible protocol, address map or information model, supported security, acceptable request rate, permissions and reconnect behavior. Prove a small read with the vendor’s tools, then make the application reproduce it.
+
+Connection | Useful when | What your application still owns
+
+Modbus TCP / RTU | The device exposes coils and registers with a documented map. | Address interpretation, scaling, quality, multi-register encoding and request scheduling.
+
+OPC UA client/server | The server exposes typed nodes, subscriptions and an appropriate security profile. | Certificate trust, identities, stable node mapping, status handling and recovery.
+
+MQTT | You need event or telemetry distribution across services or sites. | Topic model, payload schema, freshness, deduplication, authorization and storage.
+
+Vendor protocol | The machine requires a vendor interface or features absent from generic protocols. | SDK qualification, licensing, thread model, compatibility and deployment support.
+
+Modbus essentials
+
+Coils and discrete inputs represent bits; holding and input registers represent 16-bit words. Conventional human references such as 40001 are not necessarily the numeric address passed to a client library. With a device whose first holding register is called 40001, its protocol offset is commonly 0. Confirm the manual and library convention. Do not transmit 40001 because it appears in a spreadsheet.
+
+The course examples use function 03 to read holding registers. Registers do not carry engineering units or source timestamps. A successful transport response means bytes arrived—not that the sensor is healthy or the mapping is correct. Traditional Modbus TCP also does not, by itself, authenticate an operator or encrypt traffic. Use the site’s controlled network architecture and supported secure options.
+
+The original article uses NModbus4. For a new evaluation, examine the NModbus project [P3] (https://github.com/NModbus/NModbus) , a fork of NModbus4, and pin the version you test. Its APIs differ. This handbook does not substitute an untested package command for a verified device integration. The supplied framing exercise has no connection to a PLC and is deliberately not a complete Modbus driver.
+
+OPC UA essentials
+
+Use the OPC Foundation’s .NET implementation [P4] (https://github.com/OPCFoundation/UA-.NETStandard) as a reference implementation to evaluate. Learn endpoint discovery, application certificates, trusted peers, user identity, browsing, reading and subscriptions in that order. Use a test server and a separate browsing client before introducing your own abstraction.
+
+A NodeId’s namespace index can change. Persist the namespace URI with the identifier and resolve the current index after connecting. Read the returned data type and status. Reject or label bad values instead of silently converting null to zero. Engineering-unit metadata is useful when the server actually supplies it; OPC UA does not create missing semantics automatically.
+
+Record revised sampling and publishing intervals, queue sizes, overflow indications and reconnect outcomes. Test a disconnected session and a restarted server. A successful reconnection does not prove that subscriptions resumed or that gaps were backfilled. Do not disable certificate validation to make a deployment “work.”
+
+MQTT belongs above acquisition in the proposed design
+
+Publish normalized events such as factory/site-a/tank-01/telemetry , with a stable event ID, timestamp, quality and schema version. A retained value may be old; its presence is not liveness. QoS 1 can redeliver a message. Even QoS 2’s protocol delivery behavior does not make a database transaction or physical command execute exactly once. Give consumers an idempotency key. [P5] (https://docs.oasis-open.org/mqtt/mqtt/v5.0/mqtt-v5.0.html)
+
+Begin with what the equipment actually exposes
+
+Suppose one machine exposes a small Modbus register map and another exposes an OPC UA information model. A common mistake is to choose a favorite protocol first and then make both machines fit it. A more useful approach is to inventory their actual capabilities, establish a reliable connection to each, and normalize their observations into the same application model.
+
+Your selection worksheet should contain the exact machine identity, controller revision, protocol endpoint, accessible variables, units, permissions, update rates and limits on concurrent clients. Include the tool and person responsible for confirming each item. “Supports OPC UA” is incomplete if the required tags have not been exported or the chosen endpoint is unavailable under the installed license.
+
+Walk one value through Modbus
+
+Use an invented device map with a holding register described as “reference 40101, signed temperature in tenths of a degree Celsius.” If that manual uses the common 40001-to-offset-0 convention, the numeric offset is 100. That is a convention you verify, not a rule to apply blindly to every vendor document.
+
+If a read returns 0xFFF6 , the numeric word is 65526 when interpreted as unsigned. Interpreted as a signed 16-bit two’s-complement value, it is −10. Applying the documented factor of 0.1 gives −1 °C. Each step answers a different question: where are the bits, which type do they represent, and how does that type map to a physical quantity?
+
+Record those steps in configuration rather than scattering them through UI event handlers. Also record that a successful register response has no inherent source timestamp. You may attach an acquisition timestamp, but identify it as your receipt time rather than the instant the sensor sampled the process.
+
+Walk the same concept through OPC UA
+
+For an OPC UA source, browse to the variable and inspect the actual data type, access level, engineering-unit information if present, and returned status. Record the namespace URI and node identifier. At the next connection, resolve the current namespace index. An index copied from yesterday’s browsing session is not a stable asset identity.
+
+Configure monitoring and inspect what the server accepted. The requested interval is a request; the revised interval is part of the negotiated behavior. Distinguish a current value from a stream containing every change. A latest-value subscription can be ideal for a display while being inadequate for a trace that must preserve short excursions.
+
+Separate device acquisition from distribution
+
+MQTT can distribute the normalized observations to several consumers after acquisition. For example, the device service publishes a temperature event that includes event ID, asset, value, unit, quality, observation time and schema version. A dashboard, historian and analysis worker can consume that event for different purposes.
+
+A message broker does not repair a wrong register map. It also does not establish that a retained measurement is current. Keep a liveness mechanism and a freshness rule separate from the existence of a last-known message. If a consumer retries a database transaction after a duplicate message, its stable event ID should prevent a second business effect.
+
+A protocol evaluation you can repeat
+
+Run a small fixed suite against every adapter: an ordinary read, an invalid address, a stopped server, a restored connection, an unexpected data type and a changed mapping. Record which failures are transient, which indicate configuration errors and which require human investigation. Do not retry all exceptions indefinitely.
+
+For OpenClaw.NET, keep the public tool stable while swapping the adapter underneath it. The tool should ask for “tank-01 temperature with quality,” not “read two words at offset 100.” The OpenClaw.NET runtime can then reason over one asset vocabulary and show the result in AgentQi Companion even when equipment protocols differ.
+
+Practice and model answer
+
+Exercise: translate the fictional 40101 value above into an application observation. Then list what would change if the same physical quantity came from OPC UA.
+
+Model answer
+
+The Modbus observation is −1 °C, provided the offset convention, signed type and scale are verified. OPC UA may supply the numeric type, status and source timestamp directly, but the adapter still needs stable identity, quality handling and a units contract. The normalized application field should remain the same.
+
+Hands-on: try it in the lab
+
+Lab 13. Talk Modbus TCP to the lab’s simulated tank over a real socket and decode its mixed register map.
+
+dotnet run --project .\labs\IndustrialLab -- --modbus
+dotnet run --project .\labs\IndustrialLab -- --poll --count 5
+
+Step-by-step instructions, the exact expected output and troubleshooting are in the handbook’s guided workbook, Lab 13 . Run commands from the folder that contains the handbook.
+
+References and local resources
+
+Wackysoft’s original article (https://www.cnblogs.com/wackysoft/p/22188247) · published 2026-08-04.
+
+OPC UA Part 4 MonitoredItems (https://reference.opcfoundation.org/Core/Part4/v105/docs/5.13.1) — Sampling intervals, filters, queues, revisions and overflow.
+
+NModbus project (https://github.com/NModbus/NModbus) — Package lineage, protocol support and project API entry point.
+
+OPC Foundation UA .NET Standard (https://github.com/OPCFoundation/UA-.NETStandard) — Reference SDK implementation and samples.
+
+OASIS MQTT 5.0 standard (https://docs.oasis-open.org/mqtt/mqtt/v5.0/mqtt-v5.0.html) — Delivery semantics and protocol behavior.
+
+Local comprehensive handbook and interactive exercises .
+
+Local C# lab instructions . The lab is simulated; the earlier build and protocol checks are documented in the verification record .
+
+This edition targets OpenClaw.NET (https://github.com/clawdotnet/openclaw.net) , with AgentQi Companion as its desktop interface. Industrial knowledge, evaluation and command features beyond the simulator are proposed extensions. See the local OpenClaw.NET integration chapter for configuration and version evidence. Examples and limits are educational; new prose examples are not claims of qualified hardware behavior. Relevant explanations from the existing handbook are included so this edition stands on its own.

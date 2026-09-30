@@ -1,0 +1,70 @@
+INDUSTRIAL CONTROLS WITH C#, OPENCLAW.NET AND AGENTQI COMPANION
+
+Open Industrial-Controls-Tutorial.html in a browser.
+It is a self-contained handbook with the complete reading map, 17 chapters,
+worked examples, interactive timing/byte-order exercises, 14 labs, answers,
+an eight-week study plan and the tested C# decoder.
+
+SECOND EDITION (guided labs): chapters 3-10 each end with a deep dive, and
+Appendix C is a step-by-step workbook for all 14 labs with verified expected
+output and troubleshooting. Appendix D is the lab tank's Modbus device contract.
+Appendix E is an annotated further-reading list mapped to chapters and labs.
+
+All nine original articles and three subsequent troubleshooting articles from
+Wackysoft are linked and mapped to lessons. Sources were checked 2026-09-29.
+The integration target is https://github.com/clawdotnet/openclaw.net.
+OpenClaw.NET is the .NET runtime/gateway; AgentQi Companion is its Avalonia
+desktop app. Chapter 12 proposes industrial features to add to that platform.
+References and configuration target inspected commit 603b56764642 (2026-09-29).
+
+C# LAB (requires .NET 10 SDK; first restore needs NuGet access)
+From this folder:
+  dotnet run --project .\labs\IndustrialLab -- --self-test     (expect: All 85 checks passed.)
+  dotnet run --project .\labs\IndustrialLab
+  dotnet run --project .\labs\IndustrialLab -- --modbus         (adds Modbus TCP device on 127.0.0.1:5502)
+
+Console lab modes (no service needed unless noted):
+  -- --scan-demo      PLC scan / polling simulation (Lab 2)
+  -- --alarm-demo     alarm lifecycle walkthrough (Lab 8)
+  -- --outbox-demo    lost acknowledgement + restart (Lab 10)
+  -- --poll           Modbus TCP poller; needs the service with --modbus (Labs 13-14)
+
+Other lab folders:
+  labs\DashboardStarter   package-free console dashboard (Lab 9)
+  labs\historian          SQLite schema, queries, C# writer template (Lab 7)
+                          check with: python .\labs\historian\verify-historian.py
+  labs\verify-labs.py     10 live checks; run while the service runs with --modbus
+
+The service listens at http://localhost:5088 and MCP at /mcp.
+Stop it with Ctrl+C. It simulates data only; proposals never execute.
+Read Chapter 15 before using the endpoints.
+
+The file labs/openclaw-mcp.example.json is an example fragment to merge into
+the OpenClaw.NET gateway settings under OpenClaw:Plugins:Mcp.
+Read Chapter 11 for setup, the industrial_ tool prefix and verification steps.
+This fragment is not a complete gateway configuration. No installed runtime
+configuration was changed.
+
+VERIFICATION
+85 deterministic checks passed on Windows against the real MCP package.
+Earlier live HTTP/MCP and extended lab checks are recorded in VERIFICATION.txt.
+The live check script is labs/verify-service.py (Python standard library).
+Run it only against this disposable study simulator while it is running;
+it changes simulated link state and creates in-memory study proposals.
+Each run creates new request IDs and saves service-results.json beside it.
+
+LIMITATIONS
+The lab has no real PLC connection, OPC UA adapter, MQTT broker, persistent
+database, production identity or command execution. These are extension labs
+and architecture guidance. It is loopback-only and must remain a local lab.
+OpenClaw.NET / AgentQi Companion end-to-end UI and physical controller interoperability were not tested.
+
+The offline guide can be printed using its Print button. All text is present
+without an Internet connection; source links require Internet access.
+
+EXPANDED ENGLISH ARTICLE LIBRARY
+Open english-articles/index.html for all 12 local study editions.
+Each has an HTML file and a plain-text file. The combined reading edition
+is english-articles/all-articles.html (also available as all-articles.txt).
+These contain brief source summaries and original expanded teaching; they
+are not full translations of the linked articles.

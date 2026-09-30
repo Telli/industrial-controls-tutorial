@@ -1,0 +1,309 @@
+Article 09 of 12 · Original series
+
+Designing the complete industrial software architecture
+
+Expanded English study edition · About 3,538 words · 18 minute read, plus practice
+
+This is an independently written companion to Wackysoft’s article published 2026-08-27. The brief summary below describes the source; the expanded teaching material is original and is not a full translation.
+
+Read the original source (https://www.cnblogs.com/wackysoft/p/22706114)
+
+Brief English source summary
+
+The architecture article brings the original series together and identifies acquisition as a central responsibility for the .NET developer. It connects equipment communication, interpretation, storage, business interfaces and presentation, and explicitly concludes the original sequence.
+
+Build a trustworthy acquisition service
+
+The acquisition service is your semantic boundary. Below it are registers, symbols, timeouts and firmware quirks. Above it are named assets, values with units, state observations and documented quality. OpenClaw.NET tools should consume the latter and present it through AgentQi Companion or another supported interface.
+
+Device adapter → decode → validate → timestamp and quality → fan-out
+                                                      ├ latest-value cache
+                                                      ├ historian or durable spool
+                                                      ├ alarm evaluator
+                                                      └ business event publisher
+
+Use one connection owner or explicitly supported serialization per device. A timer callback must not start a second read while the previous one still owns the connection. PeriodicTimer with an awaited loop is a useful ordinary .NET pattern; it is not a real-time scheduler. Maintain bounded queues between independent consumers. A single channel with several readers distributes items among readers; it does not broadcast every item to everyone. Create explicit fan-out if each consumer needs all samples.
+
+.NET’s channels support wait, drop-oldest, drop-newest and drop-write policies. Choose these deliberately: a live chart might keep only recent samples, while an audit event needs a durable path and explicit failure reporting. An in-memory channel alone is not a historian and does not survive a restart. [P9] (https://learn.microsoft.com/en-us/dotnet/core/extensions/channels)
+
+A normalized sample contract
+
+Field | Why it matters
+
+AssetId and TagId | Stable business identity independent of a register address.
+
+Value, Unit, DataType | Meaning and encoding after validation; preserve precision intentionally.
+
+Quality and diagnostic code | Whether the observation is usable and why it may not be.
+
+SourceTimestamp, ReceivedTimestamp | Device time versus acquisition time. If the source has no clock, say so.
+
+Sequence and BootId | Ordering and restart detection within an explicitly defined stream.
+
+MappingVersion and firmware context | Which interpretation produced the value.
+
+Raw-value reference | Evidence for diagnosis without putting unlimited byte dumps into every response.
+
+Worked failure: the last temperature is 54 °C at 10:00:00. Communications fail at 10:00:01. At 10:00:05, return the last value with its original timestamp and bad/stale quality. Do not return 0 °C , and do not attach 10:00:05 as though that were the measurement time. An agent must be able to say, “The latest available sample is five seconds old; I cannot verify the current temperature.”
+
+Use a configurable stale threshold per tag or class of signal. On a reconnect, validate identity and mapping, then acquire a fresh sample before returning to Good. Track poll duration, consecutive failures, reconnect count, queue depth, dropped display samples, spool occupancy and last successful acquisition. Use capped exponential backoff with jitter, but coordinate it with the user-visible freshness requirement.
+
+Design exercise: if acquisition produces 1000 samples/s and storage handles 800/s, the backlog grows by 200/s. A 10,000-sample buffer buys only 50 seconds. A bigger buffer delays failure; it does not fix insufficient sustained throughput.
+
+Move from study to a plant integration
+
+The simulator teaches contracts and failure handling. It does not qualify a machine, electrical design or safety function. A production integration needs a controls engineer’s device contract and the site’s operational requirements. Work from those concrete requirements; do not promote the toy tank’s limits into real process limits.
+
+A proposed command boundary
+
+Split proposal, approval and execution into separate privileges. Bind a reviewed command to its asset, parameters, units, actor, approval identity, expiry, mapping version and relevant state/recipe preconditions. Persist that record before dispatch. Revalidate authorization, expiry and current preconditions at execution. Use a single owner for dispatch and a recoverable command state machine.
+
+The approval must cover the exact content being executed. If someone changes the target after approval, invalidate the approval. An agent must not approve its own proposal, and an “approve=true” argument supplied by the model is not evidence of approval. If a controller acknowledgement is lost, reconcile using the command ID and controller feedback. Avoid promising end-to-end exactly-once execution without a device contract that actually supports the required behavior.
+
+Progressive rollout
+
+Stage | Scope | Exit evidence
+
+1. Offline | Simulated signals, fixtures and recorded incidents. | Known encodings, failures and agent abstentions behave as specified.
+
+2. Read-only bench | Approved controller or test server. | Identity, firmware, mapping, quality, load and reconnect behavior verified.
+
+3. Shadow operation | Observe approved production data; suggestions are advisory. | Data coverage and explanations compared with operator findings.
+
+4. Human-reviewed proposals | Bounded work requests with a durable record. | Identity, review content, expiry and audit tested.
+
+5. Engineered dispatch | Only specific actions approved for that machine. | Device acknowledgements, duplicate handling, recovery and interlocks verified.
+
+Use distinct service identities, asset permissions, encrypted authenticated connections where supported and controlled routes between operational and enterprise systems. Keep credentials out of prompts. Capture a deployment manifest containing gateway version, adapter package versions, mappings, controller program/firmware, certificates and approved procedures. Test restore as well as backup.
+
+Acceptance scenarios
+
+Unplug communications: the last value is preserved and quality degrades; no request silently changes into a command.
+
+Restart the gateway: history gaps and command recovery are explicit; old approvals do not unexpectedly run.
+
+Change a mapping or controller revision: incompatible interpretations are blocked or clearly flagged.
+
+Lose an acknowledgement: the request becomes uncertain and is reconciled without blind repetition.
+
+Inject an alarm flood or a slow database: memory and queues remain bounded and loss is reported.
+
+Give an agent a misleading manual or stale sample: it does not treat those contents as permission or verified current evidence.
+
+The value of the AI layer should be assessed separately from communication reliability. Track unsupported-claim rate, correct source/asset selection, correct abstention on missing data and time to useful investigation. A fluent answer is not a successful incident response.
+
+Integrate OpenClaw.NET through C# tools
+
+This course targets clawdotnet/openclaw.net (https://github.com/clawdotnet/openclaw.net) . OpenClaw.NET is the .NET agent runtime and gateway. AgentQi Companion is its Avalonia desktop application, and AgentQi.dev is its documentation and ecosystem home. The repository is an independent implementation inspired by upstream OpenClaw. Its configuration and extension contracts must be checked against this implementation. [P17] (https://github.com/clawdotnet/openclaw.net/blob/603b567646423a8090a16836aa155f9b011aaa00/README.md)
+
+Integration reference checked 29 September 2026 against commit 603b567646423a8090a16836aa155f9b011aaa00 . The links below preserve that source revision. A packaged release may differ from the inspected main branch. The OpenClaw.NET application and Companion have not been run for this study pack.
+
+Start with the separate C# MCP service supplied in this pack. It gives OpenClaw.NET a narrow interface to trustworthy observations and study proposals. Keep protocol adapters, units, quality and validation in the industrial application service. The agent runtime can then change without forcing changes to device communications.
+
+The lab uses the official MCP C# SDK, ModelContextProtocol.AspNetCore 2.2.0, targeting .NET 10. Its build and HTTP/MCP checks passed on this computer with SDK 10.0.112. Those checks establish the lab service behavior; they do not establish a completed OpenClaw.NET deployment. [P15] (https://github.com/modelcontextprotocol/csharp-sdk) [P16] (https://github.com/modelcontextprotocol/csharp-sdk/blob/main/docs/concepts/getting-started.md)
+
+Choose the integration boundary
+
+Approach | Use in this course | Engineering consequence
+
+External C# MCP service | Recommended starting point; use the supplied simulator. | Separate deployment and process boundary; OpenClaw.NET consumes its tools through its MCP client.
+
+Native C# tool implementing ITool | A later option when you own the OpenClaw.NET host composition. | Thin wrapper around the same industrial application service; registration and host lifecycle are additional work.
+
+Dynamically loaded .NET plugin | Consider only when its deployment model is needed. | The repository identifies dynamic native plugins as JIT-only; do not assume a DLL can be dropped into a NativeAOT bundle.
+
+MQTT incident ingestion | Future extension for event-driven summaries. | Normalize and deduplicate events in C# before requesting analysis. No MQTT connection is supplied in this lab.
+
+The runtime, gateway and optional extensions have separate responsibilities. A reusable skill can describe an investigation procedure, while a tool supplies executable behavior. Neither a skill nor an agent confirmation establishes permission to operate equipment. The service must enforce the user, asset and action contract. [P18] (https://github.com/clawdotnet/openclaw.net/blob/603b567646423a8090a16836aa155f9b011aaa00/docs/ARCHITECTURE_BOUNDARIES.md)
+
+Connect the local lab to OpenClaw.NET
+
+Start the simulator using Chapter 15 and leave it running at http://localhost:5088 .
+
+Set up OpenClaw.NET separately. With a desktop bundle, use AgentQi Companion’s setup flow to choose the provider/model and start the gateway. For development, clone the specified repository and use its CLI entry point shown below. Configure provider credentials through its supported setup; this study pack contains none.
+
+Merge labs/openclaw-mcp.example.json into the gateway’s actual external settings file, retaining existing settings. The normal setup-generated path is ~/.openclaw/config/openclaw.settings.json ; an explicit --config path can differ. The example is a fragment, not a complete provider, identity or deployment configuration.
+
+Restart the gateway with that settings file after the lab is ready. Inspect discovery logs, then open Companion or the gateway’s browser chat and perform the exercise below.
+
+Optional source checkout setup, run in a development folder of your choice with Git and .NET 10 available:
+
+git clone https://github.com/clawdotnet/openclaw.net
+cd openclaw.net
+dotnet run --project src/OpenClaw.Cli -c Release -- start
+
+The repository’s quickstart explains provider selection and first-run configuration. After merging the fragment, an explicit launch from that checkout is:
+
+dotnet run --project src/OpenClaw.Cli -c Release -- setup launch --config "$env:USERPROFILE\.openclaw\config\openclaw.settings.json"
+
+The usual browser chat address is http://127.0.0.1:18789/chat ; administration is at /admin . Use the installation’s configured operator identity. The startup message identifies readiness. [P21] (https://github.com/clawdotnet/openclaw.net/blob/603b567646423a8090a16836aa155f9b011aaa00/docs/QUICKSTART.md)
+
+{
+  "OpenClaw": {
+    "Plugins": {
+      "Enabled": true,
+      "Mcp": {
+        "Enabled": true,
+        "Servers": {
+          "industrial-study": {
+            "Enabled": true,
+            "Name": "Industrial controls study lab",
+            "Transport": "http",
+            "Url": "http://localhost:5088/mcp",
+            "ToolNamePrefix": "industrial_",
+            "StartupTimeoutSeconds": 15,
+            "RequestTimeoutSeconds": 30
+          }
+        }
+      }
+    }
+  }
+}
+
+The gateway settings use OpenClaw:Plugins:Mcp . In the inspected client code, http selects Streamable HTTP; StartupTimeoutSeconds bounds connection initialization and RequestTimeoutSeconds bounds tool discovery. Do not treat the latter as a verified deadline for every tool execution; invocation also depends on the runtime cancellation path and service-side limits. These fields were checked against the actual configuration model and client source. [P19] (https://github.com/clawdotnet/openclaw.net/blob/603b567646423a8090a16836aa155f9b011aaa00/src/OpenClaw.Core/Plugins/PluginModels.cs) [P20] (https://github.com/clawdotnet/openclaw.net/blob/603b567646423a8090a16836aa155f9b011aaa00/src/OpenClaw.Agent/Plugins/McpServerToolRegistry.cs) [P23] (https://github.com/clawdotnet/openclaw.net/blob/603b567646423a8090a16836aa155f9b011aaa00/src/OpenClaw.Gateway/appsettings.json)
+
+Keep the two MCP addresses straight: localhost:5088/mcp exposes the industrial lab for OpenClaw.NET to consume. The gateway’s own 127.0.0.1:18789/mcp exposes gateway capabilities to other MCP clients. Enter the lab address in this server configuration. Both processes must share the relevant network context for localhost to work. This simulator remains a local, unauthenticated teaching service. [P24] (https://github.com/clawdotnet/openclaw.net/blob/603b567646423a8090a16836aa155f9b011aaa00/docs/MCPAPP.md)
+
+Verify discovery and tool behavior
+
+The inspected registry logs MCP server enabled: industrial-study with a tool count after discovery. This lab should contribute three tools. With the explicit prefix above, expect the following names in the agent’s tool catalog. If they are absent, check the loaded settings file, enable flags, service reachability, discovery errors and active tool policy. Restart after the lab is available; a successful gateway health response alone does not prove discovery.
+
+Lab MCP name | OpenClaw.NET name with this config | Contract
+
+get_machine_snapshot | industrial_get_machine_snapshot | One simulated tank’s values, unit, state, age, quality, sequence and mapping version.
+
+get_recent_samples | industrial_get_recent_samples | Between 1 and 60 acquired observations, including timestamps.
+
+propose_setpoint | industrial_propose_setpoint | Stores an in-memory study proposal with evidence and expiry; no approval, dispatch or physical action.
+
+The example registers the lab’s published catalog. It contains no per-server tool filter because the inspected McpServerConfig has no such field. For a future deployment, publish only the operations you intend to expose and apply the runtime’s appropriate tool policy. The industrial service must still validate and authorize every operation independently.
+
+Then request a study proposal for 55 °C using industrial_propose_setpoint , an actual evidence sequence and a unique request ID. Its result must indicate ProposedOnly and Executed=false, while the actual target remains 60 °C. Disconnect the simulated link and repeat: bad current evidence must block proposal creation.
+
+The proposal contract allows evidence up to 30 seconds old while requiring the latest acquired state to be within 2 seconds. A 60-second expiry is recorded data, not a scheduled action. These windows accommodate study interaction; a real command path would need immediate execution-time revalidation.
+
+When a native C# tool makes sense
+
+The repository’s OpenClaw.Core.Abstractions.ITool contract supplies Name , Description , ParameterSchema and ValueTask<string> ExecuteAsync(string argumentsJson, CancellationToken ct) . A future adapter can parse a small request, invoke your industrial application service and serialize a bounded result. Implementing the interface does not by itself register the tool; integrate it with the selected host’s composition and lifecycle. The pack implements the external MCP route, not this additional adapter. [P22] (https://github.com/clawdotnet/openclaw.net/blob/603b567646423a8090a16836aa155f9b011aaa00/src/OpenClaw.Core/Abstractions/ITool.cs)
+
+AgentQi Companion and the industrial product direction
+
+For this industrial direction, use AgentQi Companion as the operator-facing conversation surface and OpenClaw.NET as the reasoning and tool-execution runtime. Connect the runtime to the C# industrial service through MCP. Build asset knowledge, evaluated explanations and reviewed workflows around that service. A request travels from Companion to the runtime, then through a bounded tool to the industrial application; the controller retains its physical control responsibilities.
+
+Proposed capability | Inputs | Useful output | Acceptance test
+
+Asset knowledge | Approved manuals, tag definitions, firmware compatibility and maintenance procedures. | A cited answer scoped to the correct machine and revision. | Reject a manual for the wrong model; cite the exact applicable source.
+
+Incident explanation | Alarm sequence, trend window, quality and known changes. | A timeline, ranked hypotheses and a proposed next observation. | Separate evidence from inference; admit missing data.
+
+Operator assistance | User question and asset permission. | A bounded query and understandable result. | A read-only user cannot obtain a write through a different tool.
+
+Maintenance workflow | Reviewed incident and approved procedure. | A draft work item with evidence links and owner fields. | External creation requires the intended authorization; retries do not duplicate work.
+
+Agent evaluation | Recorded incidents and adversarial cases. | Grounding, abstention and action-policy scores. | A model upgrade meets the same measurable release criteria.
+
+Design the evidence package first
+
+Before selecting an agent orchestrator, define one incident package: asset identity, clock confidence, time window, event IDs, sample-quality coverage, mapping version, relevant procedure revisions and a small set of immutable evidence references. A summary should point back to that package. Do not let a fluent paragraph become the only record of what the system observed.
+
+IncidentContext
+  Asset: tank-01 / mapping tank-v3 / firmware compatibility profile X
+  Window: UTC start and end; clock uncertainty recorded
+  Facts: alarm event IDs, min/max, gap count, latest good sample
+  Knowledge: approved procedure ID and revision
+  Analysis: hypotheses, evidence references, missing observations
+  Proposal: requested action, scope, expiry, required approval class
+
+Treat manuals, maintenance notes and tool results as data that may contain mistakes or hostile instructions. Their contents must not authorize new tools, change policy or reveal credentials. Give the agent only approved procedures and bounded queries for the relevant asset. Keep authorization and process limits in deterministic service code.
+
+Where to invest first
+
+Read-only incident assistant: explain alarms and retrieve the right procedure. Measure evidence accuracy and time saved locating information.
+
+Shift and batch summaries: combine production events with trends and quality coverage. Make missing intervals explicit.
+
+Maintenance proposals: draft an investigation or work item that a person can review.
+
+Constrained operational proposals: only after identity, command contracts, audit and recovery are engineered.
+
+Defer autonomous tuning and direct actuation. Their engineering burden is much larger than natural-language data access. Even a numerically valid setpoint can be inappropriate for the recipe, batch phase, material or maintenance condition. A confidence score cannot establish physical permission.
+
+Turn the AgentQi direction into a first product increment
+
+Start with one asset and one incident workflow: the operator asks in AgentQi Companion, OpenClaw.NET requests a bounded snapshot and trend, and the assistant returns a cited explanation with missing evidence identified. Add a service endpoint for approved procedure lookup before attempting a broad knowledge corpus. Store operator review separately from the generated answer. Then evaluate recorded incidents for correct asset selection, evidence use and abstention. The supplied simulator supports the first tool contracts; procedure retrieval, durable review and plant-specific workflows remain proposed additions.
+
+Draw responsibilities and failure boundaries
+
+A diagram with seven boxes is only useful if it answers what each box owns and what happens when it fails. Start with one machine and draw four paths: observations from the machine, requests toward the machine, historical records toward storage, and explanations toward people. These paths have different reliability and authorization requirements.
+
+The observation path should preserve provenance and identify gaps. The request path should validate identity, preconditions and outcome. The storage path should provide the required durability. The explanation path should remain linked to evidence. Combining all four into one generic “message” interface can make a diagram look simple while hiding the distinctions needed for recovery.
+
+Keep the core testable without equipment
+
+Define a domain model using assets, observations, quality, command requests and outcomes. Put vendor-specific code behind adapters. Feed synthetic observations into the domain layer and verify the same behavior you expect from live data. This lets you reproduce an incident without needing to recreate its physical conditions on a machine.
+
+A sensible initial solution can have a small number of projects or folders: domain contracts, application services, device adapters, persistence and host/UI. The right deployment unit is a separate decision. A single service with clear ownership is often easier to study than a distributed prototype with many independently failing processes.
+
+Choose an owner for mutable state
+
+If several components can write the same machine state, they need a conflict policy. One useful design gives one acquisition owner responsibility for publishing observations and one command owner responsibility for dispatch. Readers consume immutable snapshots. They do not edit the cached value and hope the controller follows it.
+
+State should be named by what it means. ObservedPhase , RequestedPhase and CommandStatus are clearer than one property called Phase that changes meaning depending on who last wrote it. A model that exposes these distinctions also gives an agent fewer opportunities to confuse an intention with a fact.
+
+Add OpenClaw.NET at the application boundary
+
+In the supplied architecture, an MCP server calls the same application services used by other authorized clients. OpenClaw.NET does not need to know which protocol a machine uses. The tool surface can start with snapshot, bounded history and proposal creation. The C# service still enforces the actual contract.
+
+Use AgentQi Companion for the conversation and OpenClaw.NET for tool orchestration. Keep proposed industrial asset knowledge and evaluation services outside the device adapter. A manual-search capability should not determine register decoding. An explanation should not bypass the command validator. An evaluation record should preserve the tool observations and model version so improvements can be assessed against the same incidents.
+
+Use failure stories as architecture tests
+
+Tell a concrete story: “The database is slow for two minutes while the controller remains available.” Then identify which queues grow, which values remain visible, whether recording requirements are met and what the operator sees. Tell another: “The agent is unavailable all afternoon.” The acquisition and required local control should have a defined behavior independent of the agent.
+
+These stories turn architecture review into a testable exercise. They also help you decide whether a proposed new service creates useful isolation or just another outage mode. Add distribution when it solves a named requirement, not because the boxes on a diagram look more modern.
+
+Practice and model answer
+
+Exercise: diagram the observation and request paths separately. Mark the authoritative state owner, the persistent record and the place where an unknown command outcome is reconciled.
+
+Model answer
+
+Observations originate at acquisition with provenance. Requests enter a validated application boundary, become durable command records where required, and reach a dedicated dispatch owner. A lost acknowledgement is reconciled against the device contract and feedback; it is not repaired by changing the dashboard or rerunning an agent prompt.
+
+Hands-on: try it in the lab
+
+Lab 14. Produce Stale, BadCommunication and BadConfiguration on purpose, then score an agent’s answers against the same failures (Lab 11).
+
+dotnet run --project .\labs\IndustrialLab -- --poll --poll-ms 300
+
+Step-by-step instructions, the exact expected output and troubleshooting are in the handbook’s guided workbook, Lab 14 . Run commands from the folder that contains the handbook.
+
+References and local resources
+
+Wackysoft’s original article (https://www.cnblogs.com/wackysoft/p/22706114) · published 2026-08-27.
+
+Microsoft System.Threading.Channels (https://learn.microsoft.com/en-us/dotnet/core/extensions/channels) — Bounded queues, backpressure and full-buffer policies.
+
+Official MCP C# SDK (https://github.com/modelcontextprotocol/csharp-sdk) — Package roles and SDK ownership.
+
+OpenClaw.NET project and AgentQi Companion (https://github.com/clawdotnet/openclaw.net/blob/603b567646423a8090a16836aa155f9b011aaa00/README.md) — Runtime identity, desktop product and ecosystem.
+
+OpenClaw.NET architecture boundaries (https://github.com/clawdotnet/openclaw.net/blob/603b567646423a8090a16836aa155f9b011aaa00/docs/ARCHITECTURE_BOUNDARIES.md) — Runtime, gateway, extensions and deployment responsibilities.
+
+OpenClaw.NET MCP configuration model (https://github.com/clawdotnet/openclaw.net/blob/603b567646423a8090a16836aa155f9b011aaa00/src/OpenClaw.Core/Plugins/PluginModels.cs) — Plugins.Mcp, server fields, transport names and timeout units.
+
+OpenClaw.NET MCP client registry (https://github.com/clawdotnet/openclaw.net/blob/603b567646423a8090a16836aa155f9b011aaa00/src/OpenClaw.Agent/Plugins/McpServerToolRegistry.cs) — Streamable HTTP, discovery, prefixes and startup logging.
+
+OpenClaw.NET quickstart (https://github.com/clawdotnet/openclaw.net/blob/603b567646423a8090a16836aa155f9b011aaa00/docs/QUICKSTART.md) — Source commands, setup-generated config path and gateway entry points.
+
+OpenClaw.NET native C# tool contract (https://github.com/clawdotnet/openclaw.net/blob/603b567646423a8090a16836aa155f9b011aaa00/src/OpenClaw.Core/Abstractions/ITool.cs) — ITool signature and JSON schema contract.
+
+OpenClaw.NET gateway settings example (https://github.com/clawdotnet/openclaw.net/blob/603b567646423a8090a16836aa155f9b011aaa00/src/OpenClaw.Gateway/appsettings.json) — OpenClaw root and Plugins.Mcp configuration nesting.
+
+OpenClaw.NET MCP roles (https://github.com/clawdotnet/openclaw.net/blob/603b567646423a8090a16836aa155f9b011aaa00/docs/MCPAPP.md) — Distinguishes the gateway MCP server, external MCP client and MCP Apps.
+
+Local comprehensive handbook and interactive exercises .
+
+Local C# lab instructions . The lab is simulated; the earlier build and protocol checks are documented in the verification record .
+
+This edition targets OpenClaw.NET (https://github.com/clawdotnet/openclaw.net) , with AgentQi Companion as its desktop interface. Industrial knowledge, evaluation and command features beyond the simulator are proposed extensions. See the local OpenClaw.NET integration chapter for configuration and version evidence. Examples and limits are educational; new prose examples are not claims of qualified hardware behavior. Relevant explanations from the existing handbook are included so this edition stands on its own.

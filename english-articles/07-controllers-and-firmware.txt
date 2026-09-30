@@ -1,0 +1,95 @@
+Article 07 of 12 · Original series
+
+Controllers, firmware and the compatibility contract
+
+Expanded English study edition · About 1,050 words · 6 minute read, plus practice
+
+This is an independently written companion to Wackysoft’s article published 2026-08-12. The brief summary below describes the source; the expanded teaching material is original and is not a full translation.
+
+Read the original source (https://www.cnblogs.com/wackysoft/p/22405680)
+
+Brief English source summary
+
+The controller-and-firmware article explains that a lower-level controller is a system role, not exclusively a PLC. It emphasizes that firmware and device configuration can change communication behavior even when the supervisory application itself has not changed.
+
+Separate the things called a version
+
+When someone says “the machine was updated,” ask what changed. The physical controller model, device firmware, PLC application, I/O configuration, exported symbols, gateway mapping and desktop application are distinct items. A single version string in an About dialog does not describe the whole compatibility contract.
+
+Firmware provides device capabilities and runtime behavior. The PLC application contains the machine logic and variables. The mapping tells the supervisory service how to interpret those variables. Your C# code may remain identical while a mapping or export changes underneath it. Conversely, a new C# build may work with several device revisions if its adapter explicitly supports them.
+
+Make a compatibility manifest
+
+For each asset, keep a small manifest with hardware identity, firmware version, controller-program revision, communication configuration, mapping revision and the tested gateway version. Include how each value was obtained. A version observed from the device is stronger evidence than a filename copied into a deployment note.
+
+Manifest field | Illustrative value | Why to record it
+
+Asset identity | filler-07 | Prevents testing one machine and deploying assumptions to another.
+
+Controller model and firmware | Model-A / revision F3 | Identifies the device capability set being qualified.
+
+Application revision | FillSequence 12 | Connects variable meaning to the installed control program.
+
+Mapping revision | filler-map-v5 | Identifies types, addresses, scaling and units.
+
+Gateway build | integration-study-2 | Identifies the adapter and validation behavior.
+
+Acceptance evidence | fixture set and bench test record | Shows what compatibility was actually checked.
+
+All values in this example are invented. In a real project, define who owns each field and who may change it. Store the manifest with the deployment and attach its identity to observations or their traceable context.
+
+Compatibility is more than connecting
+
+A successful network connection only establishes one part of compatibility. You still need the expected data model, types, access rights, timing, exception behavior and command semantics. A variable can remain at the same address while its meaning changes from tenths of a unit to whole units. That change may produce plausible values and escape a basic connectivity test.
+
+Validate a small set of known observations against an independent reference. Test negative values, boundary values, fault codes and invalid states where the device contract defines them. Confirm that user permissions and certificate trust still have the intended behavior. A system that connects only because validation was disabled has not passed the acceptance test.
+
+Stable application names should survive device changes
+
+Expose a stable domain name such as filler-07.fillVolume to the rest of your software. Resolve it inside the adapter to the current register map or OPC UA node. If the device representation changes, the adapter and mapping are the places to update. An MES integration or agent prompt should not contain a private controller address.
+
+For OPC UA, distinguish a namespace URI from its current numeric index. A restart or configuration change can alter the index without changing the logical namespace. Also distinguish a successful browse from a guarantee that the variable’s semantics are unchanged. Identity, type and meaning need to be checked together.
+
+Plan an upgrade as an experiment with a recovery path
+
+Before changing a device, record the working manifest and preserve the relevant configuration using the vendor-supported procedure. Establish a test environment or maintenance window, the acceptance suite and a recovery decision. The procedure must account for device-specific update behavior; this article does not prescribe firmware flashing steps.
+
+After an update, repeat the tests that exercise the contract rather than only opening the dashboard. Confirm the known values, state transitions, fault indications, permissions, reconnection and agreed performance envelope. If acceptance fails, report the mismatch before allowing the rest of the application to treat the new data as ordinary Good observations.
+
+Recovery is not always just reinstalling an older binary. A controller application may have migrated retained data or changed configuration. The appropriate rollback procedure must be supported by the device and site process. Document what can be restored and what needs reconciliation.
+
+Use agents for comparison and explanation
+
+OpenClaw.NET can compare a recorded manifest with the expected one, retrieve applicable release notes and draft a compatibility report. It should not infer permission to change firmware from a note that mentions an upgrade. A proposed industrial knowledge service can select documents by model and revision, reject irrelevant procedures and return the evidence for display in AgentQi Companion.
+
+Require the report to separate observed differences from possible consequences. “The mapping revision changed” is a fact if the revisions were read. “That change caused the temperature error” is a hypothesis until the mapping and evidence are examined. The distinction helps a human decide which check to perform next.
+
+Practice and model answer
+
+Exercise: the displayed temperature is ten times too high after a machine update, but communications remain healthy. Build a five-step investigation that does not begin by changing the UI.
+
+Model answer
+
+Identify the actual asset and current manifest; compare firmware, application and mapping revisions with the last working record; inspect raw values and types; verify units and scale against the current device definition; repeat a known-value test and update the adapter only when the mismatch is established. A plausible network response does not validate interpretation.
+
+Hands-on: try it in the lab
+
+Lab 12. Point a client at a device whose map version it does not expect, and write the upgrade and rollback procedure that prevents it.
+
+dotnet run --project .\labs\IndustrialLab -- --poll --count 3 --expect-mapping 2
+
+Step-by-step instructions, the exact expected output and troubleshooting are in the handbook’s guided workbook, Lab 12 . Run commands from the folder that contains the handbook.
+
+References and local resources
+
+Wackysoft’s original article (https://www.cnblogs.com/wackysoft/p/22405680) · published 2026-08-12.
+
+OPC Foundation UA .NET Standard (https://github.com/OPCFoundation/UA-.NETStandard) — Reference SDK implementation and samples.
+
+Beckhoff variable addresses (https://infosys.beckhoff.com/content/1033/tc3_plc_intro/2529360523.html) — Single-bit addresses and byte allocation for Boolean variables.
+
+Local comprehensive handbook and interactive exercises .
+
+Local C# lab instructions . The lab is simulated; the earlier build and protocol checks are documented in the verification record .
+
+This edition targets OpenClaw.NET (https://github.com/clawdotnet/openclaw.net) , with AgentQi Companion as its desktop interface. Industrial knowledge, evaluation and command features beyond the simulator are proposed extensions. See the local OpenClaw.NET integration chapter for configuration and version evidence. Examples and limits are educational; new prose examples are not claims of qualified hardware behavior. Relevant explanations from the existing handbook are included so this edition stands on its own.

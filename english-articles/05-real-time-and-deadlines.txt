@@ -1,0 +1,100 @@
+Article 05 of 12 · Original series
+
+Understanding real time, deadlines and uncertainty
+
+Expanded English study edition · About 1,417 words · 8 minute read, plus practice
+
+This is an independently written companion to Wackysoft’s article published 2026-08-07. The brief summary below describes the source; the expanded teaching material is original and is not a full translation.
+
+Read the original source (https://www.cnblogs.com/wackysoft/p/22292586)
+
+Brief English source summary
+
+The real-time article contrasts interactive software responsiveness with industrial timing requirements. Its central lesson is to reason about deadlines and worst-case behavior, while assigning ordinary .NET supervisory work to the part of the system suited to it.
+
+Timing, scans and observations
+
+A deadline is different from an average response time. A task that usually finishes in 2 ms but sometimes takes 200 ms cannot satisfy a 10 ms bound. Industrial systems include hard, firm and soft timing requirements; the classification comes from the consequence of a missed deadline. No universal millisecond limit separates them.
+
+In the simple cyclic model, the controller samples inputs, evaluates logic and updates outputs. An input changing just after sampling waits almost one cycle to be sampled, then waits for computation and output update. Real controllers can also have periodic tasks, interrupts, asynchronous I/O and communication services. Beckhoff’s documentation explicitly describes task priorities, CPU assignment and cycle times; “PLCs have no operating system or scheduling” is not an accurate general explanation. [P1] (https://infosys.beckhoff.com/content/1033/te1010_tc3_realtime_monitor/6847560459.html)
+
+Budget the whole observation path
+
+For an illustrative monitor, suppose input conversion takes at most 8 ms, control-data publication 20 ms, the next poll 250 ms, a response 40 ms and the next display refresh 200 ms. A simple serial upper estimate is 518 ms . This is only a teaching sum: an engineering bound also needs scheduling jitter, clock assumptions, failures and the actual controller’s timing model. It is not a certified worst-case analysis.
+
+The main handbook includes an interactive exercise for this topic. Its local link appears at the end of this edition.
+
+Choose acquisition rates from the signal’s bandwidth, the shortest event you must observe, acceptable age, controller capacity and network load. A rule such as “poll at twice the scan period” is not a sampling theorem. Faster polling can reduce observation latency without discovering a new value every time. Slower polling can miss an entire pulse. If a sensor pulse lasts 15 ms and you poll every 250 ms, use a controller-side latch, counter or event buffer instead of hoping your poll catches it.
+
+For vibration or fast motion, a dedicated acquisition device may sample at high rates and deliver blocks with timestamps. The HMI can draw a summary at a much slower rate. Similarly, OPC UA source updates, monitored-item sampling and subscription publishing are separate schedules; the server may revise your requested intervals. Subscriptions do not promise that every physical transition will be observed. [P2] (https://reference.opcfoundation.org/Core/Part4/v105/docs/5.13.1)
+
+What C# should promise
+
+An ordinary .NET application on a general-purpose operating system should promise measured service objectives, such as an acceptable sample-age distribution, recovery time and bounded memory usage. It should not claim a hard real-time guarantee because it uses asynchronous methods or a high-priority thread. Keep a protective function in an appropriately engineered control or safety system. A normal PLC is not automatically a safety controller either.
+
+Record latency histograms, maximum sample age and missed deadlines separately. Wall-clock UTC timestamps help correlate equipment. A monotonic clock measures elapsed time even if the system clock changes. The supplied lab uses TimeProvider.GetTimestamp() for current-sample age. Reading a cached value must never reset the time at which it was acquired.
+
+Check your understanding
+
+A 1-second temperature poll may be adequate for one slow process and inadequate for another. You need the process dynamics and required response, not a universal temperature sampling number. An unchanged value is also not proof of a broken link; look for acquisition timestamps, sequence and connection health.
+
+Ask what a late result means
+
+The same delay can have different consequences in different tasks. A report generated two seconds late may still be completely useful. A label-print instruction delivered after its container has passed the printer may be useless. A protective response delivered after the relevant hazard has developed may be unacceptable. Timing requirements come from those consequences, not from whether the programmer calls a function “real time.”
+
+For each task, write a trigger, a required result, a deadline, the assumed operating conditions and the response to a missed deadline. This turns a vague desire for speed into a requirement that can be measured or analyzed. It also reveals where a desktop service is being asked to do something its environment cannot guarantee.
+
+Average speed can hide a bad tail
+
+Suppose a test performs 1000 operations: 999 finish in 4 ms and one takes 1004 ms. The average is exactly 5 ms. Reporting “5 ms response time” hides the one-second delay. The maximum, high percentiles and distribution reveal different information, and none of those observations alone proves what will happen under every future condition.
+
+A service objective such as “99% of observations are less than 500 ms old in the tested workload” is more honest than “real time.” It still needs a definition of observation age, a representative workload, instrumentation and a response when the objective is missed. Do not turn a percentile target into a hard timing guarantee.
+
+Separate the clocks
+
+Use a wall clock for timestamps that people compare across systems. Use a monotonic clock for elapsed durations inside one process. If the wall clock jumps backward after synchronization, subtracting wall-clock timestamps can produce a negative duration. A monotonic duration avoids that particular problem, but it does not make two machines share the same clock.
+
+For distributed observations, record clock origin and uncertainty. A sensor timestamp may come from a device clock with a different synchronization state than the gateway. If two events are close together relative to that uncertainty, be cautious about asserting which happened first. An agent should not invent a precise causal sequence from timestamps that cannot support it.
+
+Budget time by responsibility
+
+Separate sensor conversion, controller execution, data publication, network transit, application processing and presentation. A faster display refresh changes only the presentation part. A faster agent model changes only part of the advisory path. Neither fixes a slow sensor update or a controller-side publication delay.
+
+Also distinguish ordinary delay from timeout and recovery. A 200 ms timeout may help a UI report a failure promptly, but a timed-out command might already have executed. Timing configuration must be paired with outcome semantics. “I stopped waiting” is not equivalent to “the machine did nothing.”
+
+Give the agent a deadline it can honestly meet
+
+Useful OpenClaw.NET tasks include explaining the last incident, summarizing a shift and retrieving a procedure. Their response times can be measured as service objectives. Keep tasks whose physical correctness depends on a tightly bounded response in the engineered control path. If an industrial workflow presented through AgentQi Companion has a time limit, define what happens when analysis or review is late: expire the proposal, preserve the evidence and ask for a new assessment.
+
+When a user asks “is the tank safe right now?”, the service may only have a two-second-old observation and incomplete process context. An appropriate response states what was observed and what remains unknown. It should not convert the speed of its answer into assurance about the equipment.
+
+Practice and model answer
+
+Exercise: classify a late historical report, a late label-print result and a late protective action. Then explain why the 5 ms average in the example does not establish a 10 ms maximum.
+
+Model answer
+
+The report can remain useful after delay; the label result may lose its usefulness once the physical opportunity passes; the protective action has consequences that require an explicitly engineered bound. The average includes one 1004 ms operation, so it cannot imply a 10 ms maximum. Classify actual requirements by consequence rather than assigning every task a label from its name.
+
+Hands-on: try it in the lab
+
+Lab 2. Measure how a 100 ms poll misses 44 of 50 short pulses that the PLC caught, and how a counter recovers all of them.
+
+dotnet run --project .\labs\IndustrialLab -- --scan-demo
+dotnet run --project .\labs\IndustrialLab -- --scan-demo --poll-ms 10
+
+Step-by-step instructions, the exact expected output and troubleshooting are in the handbook’s guided workbook, Lab 2 . Run commands from the folder that contains the handbook.
+
+References and local resources
+
+Wackysoft’s original article (https://www.cnblogs.com/wackysoft/p/22292586) · published 2026-08-07.
+
+Beckhoff real-time task properties (https://infosys.beckhoff.com/content/1033/te1010_tc3_realtime_monitor/6847560459.html) — Task priorities, cycles and CPU assignment.
+
+OPC UA Part 4 MonitoredItems (https://reference.opcfoundation.org/Core/Part4/v105/docs/5.13.1) — Sampling intervals, filters, queues, revisions and overflow.
+
+Local comprehensive handbook and interactive exercises .
+
+Local C# lab instructions . The lab is simulated; the earlier build and protocol checks are documented in the verification record .
+
+This edition targets OpenClaw.NET (https://github.com/clawdotnet/openclaw.net) , with AgentQi Companion as its desktop interface. Industrial knowledge, evaluation and command features beyond the simulator are proposed extensions. See the local OpenClaw.NET integration chapter for configuration and version evidence. Examples and limits are educational; new prose examples are not claims of qualified hardware behavior. Relevant explanations from the existing handbook are included so this edition stands on its own.

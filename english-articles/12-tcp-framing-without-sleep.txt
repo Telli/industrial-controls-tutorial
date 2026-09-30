@@ -1,0 +1,101 @@
+Article 12 of 12 · Troubleshooting follow-up
+
+Reading TCP messages without relying on Sleep
+
+Expanded English study edition · About 1,364 words · 7 minute read, plus practice
+
+This is an independently written companion to Wackysoft’s article published 2026-09-14. The brief summary below describes the source; the expanded teaching material is original and is not a full translation.
+
+Read the original source (https://www.cnblogs.com/wackysoft/p/22947367)
+
+Brief English source summary
+
+The final follow-up investigates why delaying a read can appear to fix missing data. It distinguishes old source values from incomplete TCP reads and introduces buffering as part of assembling complete messages from a byte stream.
+
+Read streams without timing guesses
+
+TCP transports an ordered byte stream. One send can arrive in several reads; several sends can be available in one read. A delay may change how many bytes happen to be waiting, which explains why an added Sleep can appear to fix a bug. It does not create message boundaries. Microsoft documents that NetworkStream.ReadAsync can return fewer bytes than requested; zero on a nonempty read indicates graceful peer shutdown. [P8] (https://learn.microsoft.com/en-us/dotnet/api/system.net.sockets.networkstream.readasync?view=net-10.0)
+
+In the supplied teaching parser, read six bytes of a Modbus TCP header, extract the declared length, validate it, then read exactly that many more bytes. The length covers the unit identifier plus the protocol data unit. Validate the transaction ID, protocol ID, unit, function and response byte count. Preserve following frames for the next transaction. A normal library handles this framing for you; this exercise teaches what its contract must achieve.
+
+Request context: transaction 7, unit 1, function 03, two registers
+Response bytes:  00 07 00 00 00 07 01 03 04 41 CC 00 00
+                 └ ID ┘ └ P ┘ └len┘ U  F  N └ register data ┘
+Decoded words:   0x41CC, 0x0000
+ABCD float:     25.5
+
+Use one overall deadline for the operation, with cancellation covering both header and body. A timeout or malformed frame should leave the connection in a known state; the simple strategy is to close and reconnect before the next transaction. Retrying a read is different from retrying a write whose outcome is unknown. An exception response is a valid protocol frame reporting failure; report its code rather than parsing it as register data.
+
+What a ring buffer does and does not do
+
+A ring buffer retains bytes between reads. It still needs a parser that knows frame boundaries. It also needs an unambiguous full/empty representation and an overflow policy. With only (write - read + capacity) % capacity , both an empty buffer and a completely full buffer can appear to contain zero bytes. The source article’s example permits filling the entire capacity and therefore hits this ambiguity.
+
+Fix that design by keeping an explicit count, reserving one slot, or using another proven invariant. For a protocol stream, silently dropping bytes destroys framing. Fail the connection or apply backpressure according to the design. Dropping old display samples is a different, often reasonable, policy. The lab avoids a custom ring buffer and uses exact-length reads with bounded allocations.
+
+What the framing tests prove
+
+The tests feed the parser one byte at a time, feed two joined frames, truncate a frame, corrupt its length, transaction and byte count, return a device exception, and cancel a read. They prove these parser behaviors against synthetic streams. They do not prove device interoperability or network performance.
+
+Diagnose the kind of incompleteness
+
+“The read is incomplete” can describe several different failures. The network read may contain only part of a frame. The parser may have consumed the wrong number of bytes. The frame may be complete but contain a shorter exception response. Or the protocol result may be complete while the underlying measurement is old. These require different fixes.
+
+Record the expected request identity, bytes actually read, declared frame length, function/status and acquisition time. Keep captures bounded and avoid logging credentials or unrelated sensitive payloads. With those facts, you can test whether the problem is framing, request correlation or source freshness.
+
+A receive buffer is not a message boundary
+
+Suppose a protocol sends a 20-byte message. Your first read returns 7 bytes and your next returns 13. Both reads are successful. If your program processes the first seven as a complete message, the defect is in the message assembly logic. Increasing the receive buffer to 4096 bytes does not require the network stack to wait for all 20.
+
+The opposite case is equally important: two complete messages may already be waiting. A read can provide bytes from both. A parser must consume exactly the first frame and leave the remaining bytes for the next one. An arbitrary delay can make this coalescing more common, which is another reason it is not a general fix.
+
+Frame length creates a bounded obligation
+
+A length-prefixed protocol asks the reader to collect a known amount of data after validating the length. Reject impossible lengths before allocating an arbitrarily large buffer. Apply an overall operation deadline so a peer cannot keep the read alive indefinitely by sending one byte occasionally. The cancellation token in the teaching parser is where the caller supplies that deadline.
+
+On a partial-frame failure, decide how to recover the connection. In a simple client with one outstanding request, closing and reconnecting is often easier to reason about than trying to guess a new frame boundary. A mature protocol library may have a more specific recovery contract; follow that contract instead of layering an independent parser over it.
+
+Understand the ring-buffer invariant
+
+A ring buffer has storage, a read position and a write position. If equal positions can mean either empty or full, you need extra state or a reserved slot. An explicit count can distinguish the cases: count 0 means empty; count equal to capacity means full. Every write and consume must maintain that invariant.
+
+The buffer also needs an overflow policy. For a continuous protocol byte stream, discarding arbitrary bytes typically destroys framing. The appropriate reaction may be backpressure, a controlled error or disconnect. A latest-value display queue can deliberately discard old samples because each sample is independently framed and meaningful. Those are different data structures serving different requirements.
+
+Test the parser with hostile chunking
+
+Feed a known message one byte at a time. Feed several messages in one block. Stop halfway through the header and halfway through the body. Corrupt the length and request identity. Return a valid protocol exception. Cancel the operation while it is waiting. The parser should produce the same valid result under every valid chunking and fail clearly under invalid cases.
+
+The existing C# self-test includes these core behaviors for its limited function-03 response parser. It is a teaching parser, not a complete PLC transport. You still need connection management, request generation, transaction scheduling, timeouts, device-specific qualification and a well-defined write outcome if you build a real adapter.
+
+Keep agent troubleshooting evidence-based
+
+OpenClaw.NET can compare a bounded capture with the expected frame and explain which check failed. It should distinguish “only seven bytes have arrived” from “the temperature is stale.” An evaluation case for the OpenClaw.NET assistant used through AgentQi Companion can deliberately include a misleading note recommending Sleep and verify that the assistant asks for framing evidence instead of accepting the note as an instruction.
+
+Practice and model answer
+
+Exercise: a 20-byte response appears only when a 50 ms delay is inserted. List two tests that would distinguish a framing defect from a slow source update.
+
+Model answer
+
+Capture the byte counts and parse until the declared frame length is complete under varied chunking. Separately inspect the completed payload’s source sequence or timestamp. A partial frame points to assembly/transport behavior; a complete frame with an unchanged source observation points to freshness. One delay does not establish either diagnosis.
+
+Hands-on: try it in the lab
+
+Lab 5. Fragment every Modbus reply into single bytes on a real socket and confirm the values do not change — only the timing does.
+
+Invoke-RestMethod http://localhost:5088/lab/modbus/chunk/1 -Method Post
+
+Step-by-step instructions, the exact expected output and troubleshooting are in the handbook’s guided workbook, Lab 5 . Run commands from the folder that contains the handbook.
+
+References and local resources
+
+Wackysoft’s original article (https://www.cnblogs.com/wackysoft/p/22947367) · published 2026-09-14.
+
+Microsoft NetworkStream ReadAsync (https://learn.microsoft.com/en-us/dotnet/api/system.net.sockets.networkstream.readasync?view=net-10.0) — Partial reads, cancellation and peer shutdown.
+
+Microsoft System.Threading.Channels (https://learn.microsoft.com/en-us/dotnet/core/extensions/channels) — Bounded queues, backpressure and full-buffer policies.
+
+Local comprehensive handbook and interactive exercises .
+
+Local C# lab instructions . The lab is simulated; the earlier build and protocol checks are documented in the verification record .
+
+This edition targets OpenClaw.NET (https://github.com/clawdotnet/openclaw.net) , with AgentQi Companion as its desktop interface. Industrial knowledge, evaluation and command features beyond the simulator are proposed extensions. See the local OpenClaw.NET integration chapter for configuration and version evidence. Examples and limits are educational; new prose examples are not claims of qualified hardware behavior. Relevant explanations from the existing handbook are included so this edition stands on its own.

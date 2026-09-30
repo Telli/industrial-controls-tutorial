@@ -1,0 +1,25 @@
+**/bin/
+**/obj/
+.research/
+.qa/
+.authoring/
+
+# Local duplicate of the published reading files and alternate archive.
+/Industrial-Controls-Study-Pack/
+/Industrial-Controls-Study-Pack.zip
+
+# Local credentials, editor state and generated lab data.
+.env
+.env.*
+!.env.example
+*.user
+*.suo
+.vs/
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite3
+*.log
+__pycache__/
+*.pyc

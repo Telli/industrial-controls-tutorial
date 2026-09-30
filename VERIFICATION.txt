@@ -1,0 +1,123 @@
+Industrial controls tutorial verification
+Date: 2026-09-29
+
+SOURCE COVERAGE
+12 industrial-control articles read: 9 in the original series plus 3 follow-ups.
+All 12 have individual links and chapter/lab mappings in the handbook.
+24 additional primary technical references are linked.
+Article dates and content hashes are recorded in sources.json.
+
+C# BUILD
+.NET SDK: 10.0.112
+Target framework: net10.0
+ModelContextProtocol.AspNetCore: 2.2.0, with packages.lock.json
+Build succeeded with 0 warnings and 0 errors.
+
+REPEATABLE CHECKS
+35 deterministic checks passed, including byte-order fixtures, packed bits,
+fragmented/coalesced/truncated frames, invalid headers and counts, cancellation,
+freshness, reconnect acquisition, proposal bounds and idempotency.
+
+9 live HTTP/MCP checks passed using an independent HTTP client:
+initialization, exact tool catalog, simulated snapshot provenance and quality,
+proposal-only behavior, unchanged setpoint, link-failure quality, rejection
+under bad quality, fresh-data recovery, and rejection of browser Origin requests.
+
+HANDBOOK
+Approximately 10,500 words, 17 chapters, 12 labs with answers, and 2 appendices.
+Inspected desktop and mobile rendering. No JavaScript errors or page-wide
+mobile overflow; all internal anchor links resolve.
+Interactive decoder checked against a known value and invalid input.
+Interactive timing calculation checked.
+Twelve unique original-article URLs confirmed in the reading map.
+
+NOT VERIFIED
+No physical PLC, Inovance hardware, OPC UA server or MQTT broker was connected.
+OpenClaw.NET config fields, HTTP transport, tool prefixes and setup commands
+were checked against the specified repository at commit
+603b567646423a8090a16836aa155f9b011aaa00 (2026-09-29).
+No full OpenClaw.NET gateway or AgentQi Companion session was run.
+AgentQi Companion is now identified as the runtime's Avalonia desktop app.
+Industrial knowledge and review workflows described in Chapter 12 are proposals.
+The simulator has no production identity, persistent historian or command
+execution and must remain local. Browser print controls are provided; no
+separately paginated PDF artifact is supplied.
+
+EXPANDED ENGLISH LIBRARY
+12 individual English study editions, 16,917 lesson words in total.
+Each edition has a self-contained HTML file and a plain-text equivalent.
+Combined HTML and plain-text editions and a searchable local index included.
+All 14 HTML pages checked for loading, JavaScript errors, missing local links,
+invalid same-page anchors, duplicate IDs and page-wide overflow at 390px.
+Topic filtering and all 12 handbook-to-edition links verified.
+Desktop and mobile layouts inspected visually.
+The editions contain short source summaries and original expanded lessons;
+they are not complete translations of the linked copyrighted articles.
+
+OPENCLAW.NET REFERENCE UPDATE
+Target: https://github.com/clawdotnet/openclaw.net
+Inspected revision: 603b567646423a8090a16836aa155f9b011aaa00
+All 12 English editions, combined copies, handbook, example configuration,
+source references and local instructions updated for this implementation.
+Example JSON fields matched against the repository's McpServerConfig model.
+Configuration in the handbook, architecture article and combined edition
+matches labs/openclaw-mcp.example.json exactly.
+Browser/link/mobile checks rerun for the revised reading materials.
+Both ZIP packs and the previously extracted study pack refreshed.
+No installed OpenClaw.NET configuration was changed. This update validates
+documentation and examples, not an end-to-end gateway/Companion installation.
+
+SECOND EDITION: EXPANDED DETAIL AND GUIDED LABS (2026-09-29)
+Handbook: deep dives added to chapters 3-10 and 15; Appendix C (guided
+workbook, 14 labs) and Appendix D (device contract) added; Labs 13 and 14 new;
+references P25-P29 added. Appendix E (further reading,
+19 books) added; titles and authors are from knowledge, not checked against
+current catalogues. About 19,800 words in the handbook body.
+Article library: each of the 12 editions (HTML, text, combined) gained a
+hands-on lab section linking to the workbook; 17,664 words in total.
+
+New lab code: ModbusDevice.cs, ModbusPoller.cs, ScanSimulator.cs, Alarms.cs,
+Outbox.cs, LabDemos.cs, SelfTests.Labs.cs; Machine.cs gained a supervisory
+alarm and a disturbance control; Wire.cs gained a request builder, uint32 and
+int16 decoding and 16-bit bit tests. IndustrialTools.cs, the MCP tool catalog,
+IndustrialLab.csproj and packages.lock.json are unchanged (no new packages).
+
+How it was checked:
+- .NET SDK 10.0.112 on Linux. NuGet was not reachable from the build machine,
+  so the project was compiled with compile-only stand-ins for the
+  ModelContextProtocol.AspNetCore API it already used (warnings as errors:
+  0 warnings, 0 errors). Program.cs's MCP calls are unchanged from the first
+  edition, which built against the real 2.2.0 package.
+- 85 deterministic self-test checks passed (35 original + 50 new), 5
+  consecutive runs; the new checks include real loopback TCP sockets.
+- 10 live lab checks (labs/verify-labs.py, an independent Python Modbus
+  client) passed against the running service with --modbus.
+- Historian SQL: verify-historian.py passed on SQLite 3.45.1 (WAL, index
+  plans, gaps, downsampling, atomic outbox, chunked retention).
+- HistorianWriter.cs.txt compiled against a stub of the Microsoft.Data.Sqlite
+  API; it was not run against the real package.
+- DashboardStarter built and was run against the live service (normal,
+  link-loss and service-down states).
+- Every code change the workbook asks learners to make (Labs 4, 5 and 10)
+  was applied to a scratch copy and passed; the Lab 4 mutation fails at the
+  documented check.
+- Original QA scripts rerun and passed (.qa/check_guide.cjs,
+  .qa/check_english_library.cjs). New .qa/check_second_edition.cjs passed:
+  14 lab cards, deep dives, 50 cross-file links, 390 px mobile layout.
+- expand_second_edition.py is idempotent (byte-identical on re-run).
+
+Not verified in this update: a build on Windows against the real NuGet
+package (run the self-test once to confirm), the Modbus device with
+third-party Modbus tools, and any physical hardware.
+
+PUBLIC REPOSITORY PREPARATION (2026-09-30)
+The second-edition IndustrialLab project built successfully on Windows with
+the real ModelContextProtocol.AspNetCore 2.2.0 package, and all 85 self-test
+checks passed. This resolves the earlier unverified Windows build item.
+The loopback fragmentation test timeout was increased from 400 ms to 2,000 ms
+to accommodate per-byte delay scheduling on Windows. Production/lab poller
+defaults and framing behavior are unchanged. The first run exposed this test
+timing issue; the revised test passed, including subsequent timeout/reconnect
+checks. No full OpenClaw.NET / AgentQi Companion session was run.
+A README with offline reading and lab instructions was added for GitHub.
+The distributed archive contains the current reading files and lab sources.

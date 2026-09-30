@@ -1,0 +1,14 @@
+{
+  "passed": 9,
+  "checks": [
+    "MCP initialization",
+    "Exact MCP tool allowlist",
+    "MCP returns simulated quality and provenance",
+    "MCP proposal does not execute",
+    "Setpoint remains unchanged",
+    "HTTP fault injection changes quality",
+    "MCP rejects proposal with bad current data",
+    "Fresh acquisition restores quality",
+    "Browser Origin rejected"
+  ]
+}

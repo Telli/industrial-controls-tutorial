@@ -1,0 +1,103 @@
+Article 04 of 12 · Original series
+
+Designing an industrial interface that communicates the truth
+
+Expanded English study edition · About 1,174 words · 6 minute read, plus practice
+
+This is an independently written companion to Wackysoft’s article published 2026-08-06. The brief summary below describes the source; the expanded teaching material is original and is not a full translation.
+
+Read the original source (https://www.cnblogs.com/wackysoft/p/22258497)
+
+Brief English source summary
+
+The interface article compares desktop frameworks and charting tools, then emphasizes clear layouts, restrained visual design and responsive interaction. It places the ViewModel between presentation and application services so device communication does not become screen code.
+
+Design an interface an operator can trust
+
+The first screen should help the operator answer: what is the machine doing, what needs attention, how current is this information, and what happened to my last request? Start with those questions before selecting a theme.
+
+For a Windows workstation, WPF is a reasonable evaluation candidate when XAML, templates and MVVM suit the team. WinForms remains viable and does support data binding . For cross-platform needs, evaluate Avalonia against your actual operating system, hardware and control dependencies. Reusing a ViewModel does not make every desktop dependency portable. [P13] (https://learn.microsoft.com/en-us/dotnet/desktop/winforms/whats-new/net80)
+
+ScottPlot and OxyPlot are candidates for charting, not guaranteed performance rankings. ScottPlot 5 uses SkiaSharp; the article’s rendering description is inaccurate for that version. Measure your intended point count, line count, annotations, display size and refresh rate. [P14] (https://scottplot.net/faq/version-5.0/) HandyControl or MaterialDesignInXaml can provide a consistent control style; choose according to compatibility and operator needs.
+
+A practical screen contract
+
+Show measured value, unit, target and operating mode with distinct labels.
+
+Show sample age and bad quality visibly. A frozen green number is misleading.
+
+Use text and icons as well as color for abnormal conditions.
+
+Separate “request sent” from “controller accepted” and “action completed.”
+
+Show gaps in trends. Use min/max envelopes when downsampling could hide excursions.
+
+Give an operator a durable alarm list; a disappearing toast is not enough.
+
+Acquire data outside the UI thread. Marshal changes to UI-owned collections and controls through the appropriate dispatcher. Binding does not remove thread affinity, eliminate rendering work or guarantee smoothness. An example design collects every 250 ms and refreshes the visible summary every 500 ms, but those are study settings; select and test rates for the real interface.
+
+AI output belongs in a clearly labeled advisory area. Put the evidence and timestamps next to an explanation. The display might say, “Possible cause: reduced cooling flow. Supported by flow trend and alarm order; not confirmed.” Avoid converting an unverified hypothesis into a machine status.
+
+Operator review exercise
+
+Ask someone to use your screen without coaching. Can they identify stale data, distinguish requested and measured temperature, locate an unacknowledged alarm, and discover whether a command failed? Record those outcomes before polishing colors.
+
+Design around an operator’s decision
+
+Imagine an operator notices a slowly rising motor temperature. A useful screen lets them answer whether the number is current, whether the rise is unusual for the current load, whether an alarm has activated and whether an action they requested was accepted. A large animated motor icon is less valuable if none of those questions can be answered.
+
+Create a screen brief before choosing controls. Name its primary user, the decision they make, the data needed for that decision and the conditions under which the data becomes misleading. This keeps the design focused when many tags are available but only a few deserve attention on the main screen.
+
+Give every display state a meaning
+
+A numerical tile should have at least three aspects: value and unit, age and quality, and relationship to the expected operating range. Define its empty, loading, valid, invalid and disconnected states. The empty state is not zero. The loading state is not proof that the machine is stopped. The invalid state should identify the missing or questionable evidence.
+
+When an operator requests an action, show the request lifecycle rather than optimistically changing the equipment state. “Sending,” “accepted,” “completed,” “rejected” and “outcome unknown” communicate different things. If a request times out after reaching the controller, hiding the button spinner and returning to the previous screen does not explain the uncertainty.
+
+Build a trend for investigation
+
+A trend needs a unit, a time axis, a known time zone and a visible representation of missing data. It may also need a setpoint line, alarm thresholds and markers for changes in operating mode. Align those markers by actual recorded timestamps instead of the order in which UI callbacks happened to arrive.
+
+If you have a million historical samples and a plot only a thousand pixels wide, sending every sample to the screen is not automatically useful. Aggregate for the display while preserving important extremes. A min/max band can show an excursion that a mean alone would erase. Keep the underlying full-resolution data available where the recording requirement demands it.
+
+Keep view updates bounded
+
+Suppose acquisition produces 20 updates each second but the screen only needs a summary refresh four times each second. Let the acquisition service update a latest-value model and let the UI consume a bounded snapshot on its own schedule. Avoid enqueuing one UI action for every incoming point when the UI cannot keep up; that makes the displayed data progressively older while appearing busy.
+
+A useful implementation test is to pause or disconnect the source while dragging the window, opening the alarm list and scrolling history. The interface should remain responsive and identify the data loss. A smooth animation is not proof that communications are healthy.
+
+Display an agent’s answer as an interpretation
+
+Put an OpenClaw.NET explanation next to the evidence it used, with the asset, time window and quality coverage. Phrase an unconfirmed diagnosis as a hypothesis. For example, “A cooling problem is one possible explanation; the cooling-flow observation is missing.” Do not turn that sentence into a definitive equipment status label.
+
+When presenting an explanation in AgentQi Companion, store the operator’s review separately from the agent’s original answer in the proposed industrial review service. That preserves the difference between an automatically suggested explanation and a conclusion confirmed by inspection.
+
+Practice and model answer
+
+Exercise: sketch one temperature tile and one command-status area. Show how each appears during ordinary operation, communication loss and an uncertain command outcome.
+
+Model answer
+
+The tile retains the last measured number and its acquisition time but marks it stale or bad. The command area keeps the request ID and shows “outcome unknown” when acknowledgement is missing. It does not replace uncertainty with “failed” or “completed” without evidence. Both remain understandable without relying only on color.
+
+Hands-on: try it in the lab
+
+Lab 9. Run the dashboard starter, then check that it still tells the truth when the link drops, an alarm stands or a proposal is made.
+
+dotnet run --project .\labs\DashboardStarter
+
+Step-by-step instructions, the exact expected output and troubleshooting are in the handbook’s guided workbook, Lab 9 . Run commands from the folder that contains the handbook.
+
+References and local resources
+
+Wackysoft’s original article (https://www.cnblogs.com/wackysoft/p/22258497) · published 2026-08-06.
+
+Microsoft Windows Forms .NET 8 (https://learn.microsoft.com/en-us/dotnet/desktop/winforms/whats-new/net80) — Data binding and MVVM capabilities.
+
+ScottPlot 5 changes (https://scottplot.net/faq/version-5.0/) — SkiaSharp rendering backend.
+
+Local comprehensive handbook and interactive exercises .
+
+Local C# lab instructions . The lab is simulated; the earlier build and protocol checks are documented in the verification record .
+
+This edition targets OpenClaw.NET (https://github.com/clawdotnet/openclaw.net) , with AgentQi Companion as its desktop interface. Industrial knowledge, evaluation and command features beyond the simulator are proposed extensions. See the local OpenClaw.NET integration chapter for configuration and version evidence. Examples and limits are educational; new prose examples are not claims of qualified hardware behavior. Relevant explanations from the existing handbook are included so this edition stands on its own.

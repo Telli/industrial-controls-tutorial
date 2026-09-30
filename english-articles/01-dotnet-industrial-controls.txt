@@ -1,0 +1,101 @@
+Article 01 of 12 · Original series
+
+Where C# fits in an industrial control system
+
+Expanded English study edition · About 1,359 words · 7 minute read, plus practice
+
+This is an independently written companion to Wackysoft’s article published 2026-08-02. The brief summary below describes the source; the expanded teaching material is original and is not a full translation.
+
+Read the original source (https://www.cnblogs.com/wackysoft/p/22144512)
+
+Brief English source summary
+
+The opening article presents .NET industrial development as a complete field spanning device communication, data handling and operator interfaces. It introduces the major system layers and suggests learning the ecosystem before concentrating on individual libraries.
+
+Understand the machine and its layers
+
+Begin with a physical question: what happens if your application stops? For a temperature-controlled training tank, a sensor measures temperature, an input module converts its signal, a PLC executes the control program, and an output drives a heater through appropriate electrical equipment. An HMI shows the operator what is happening. A historian records measurements. A manufacturing system relates the run to a batch and product.
+
+A PLC is an industrial controller. An HMI is the operator interface. SCADA provides supervisory control and data acquisition across equipment. MES manages manufacturing execution such as work orders, traceability and production records. ERP manages enterprise resources and transactions. These are responsibilities, not a law requiring one server per box. Products may combine them. Our architectural choice is to keep register addresses and controller quirks inside a device adapter.
+
+The arrows describe information flow, not a flat network. An agent should reach a controlled service, not acquire arbitrary access to the controller subnet. Whether you deploy a broker, a replicated historian or an API across a network boundary depends on the plant’s existing architecture.
+
+A small signal vocabulary
+
+Signal | Meaning | Common mistake
+
+Digital input | A discrete field condition, such as a limit switch. | Assuming electrical high always means a safe condition.
+
+Digital output | A commanded on/off output. | Treating the command as proof that the mechanism moved.
+
+Analog input | A measured value after scaling and diagnostics. | Interpreting a raw integer as engineering units.
+
+Setpoint | The requested target for a controller. | Confusing it with the measured process value.
+
+Feedback | Evidence of actual operation, such as valve position. | Displaying “running” immediately after sending Start.
+
+Worked example: an invented input module maps raw counts 0…32000 to 0…100 °C. A raw value of 17600 becomes 17600 / 32000 × 100 = 55 °C . Store the scaling rule, range and mapping revision with the tag. Validate module diagnostics before scaling: a disconnected sensor must not become a believable zero.
+
+Controller firmware supplies the runtime and device services. Your PLC application, its exported symbols, the I/O configuration and firmware can change independently. Track their versions separately. Inovance EVO and iFA Evolution are examples in the source articles; this course does not claim to have tested those products or that every model supports the same features.
+
+Try it: assign “close heater on protective limit,” “display trend,” “produce a batch record” and “explain yesterday’s alarm” to layers. The answer belongs to the component that can meet the requirement when the network or agent is unavailable.
+
+Start with a physical outcome
+
+Imagine a small packaging station. A conveyor moves a container under a filling head, a sensor detects its position, a valve dispenses liquid, and another sensor checks that the container has departed. Your first design question is not which screen framework to use. It is which component owns each decision and what evidence confirms the intended physical outcome.
+
+Separate the station into three descriptions. The physical description names the sensor, valve, motor and material. The control description names the sequence, limits and permitted transitions. The information description names the production order, measured quantity, alarm record and operator view. A successful C# application connects those descriptions without pretending they are the same thing.
+
+A variable called ValveCommand says what was requested. A variable called ValveOpenFeedback reports what a feedback device observed. If the command is true and the feedback is false, you have a discrepancy worth investigating. If you use one Boolean called ValveOpen for both, your screen can display a success that never occurred.
+
+A useful first project
+
+Choose a tiny vertical slice: observe one asset, acquire three values, preserve their timestamps, record one abnormal condition and show one reliable screen. For the packaging station, those values might be cycle count, measured fill quantity and equipment state. Start with a simulator so that you can repeat the same conditions deliberately.
+
+Write an acceptance sentence for each value. For cycle count: “A restarted dashboard does not count the same completed cycle twice.” For fill quantity: “The value is displayed in the documented unit, with invalid sensor readings clearly identified.” For equipment state: “Loss of communications produces Unknown in the supervisory view, rather than an invented Stopped state.” These sentences are more useful than a list of installed packages because they define observable behavior.
+
+Only then choose implementations. A device adapter obtains observations. A domain service assigns meaning and evaluates rules. A persistence component stores records. A view presents them. This can begin as one process with well-defined interfaces; separation of responsibilities does not require a fleet of network services.
+
+Think in contracts before libraries
+
+An adapter contract should say what it returns, how old the data may be, how cancellation behaves and how failures are represented. It should also state whether several returned tags are one coherent snapshot. A method named ReadMachineAsync with no such guarantees is merely a convenient signature.
+
+For your C# learning path, make an immutable observation object and pass it through the system. Add the asset identity, quality and mapping revision at acquisition time. Do not let each consumer independently guess the unit or invent a timestamp. That creates one place to investigate when the interpretation is wrong.
+
+How agents add value
+
+OpenClaw.NET can ask the C# boundary for a recent production summary or an explanation of a discrepancy. It should receive named facts such as “fill quantity below tolerance,” not permission to explore arbitrary controller addresses. Present the result in AgentQi Companion. As an industrial extension, add a service that attaches the applicable procedure and evaluates whether the explanation follows the evidence; those functions are proposed additions, not supplied PLC features.
+
+Measure the first agent feature by whether a person can find the right evidence faster. A polished answer that confuses a command with feedback makes the system worse. The quality of the industrial data contract comes before the fluency of the interface.
+
+Practice and model answer
+
+Exercise: design the three observations for the packaging station. Give each an identity, type, unit if applicable, source, quality rule and timestamp origin. Explain the effect of a disconnected sensor versus a disconnected network.
+
+Model answer
+
+A sensor diagnostic can invalidate one measurement while communication remains healthy. A network failure makes the age of all affected observations grow without creating new samples. Preserve the last received values, mark their quality honestly, and keep source diagnostics separate from transport diagnostics. Neither failure should fabricate a successful cycle.
+
+Hands-on: try it in the lab
+
+Lab 1. Map a tank’s functions to owners and prove the plant stays safe with your software switched off.
+
+Step-by-step instructions, the exact expected output and troubleshooting are in the handbook’s guided workbook, Lab 1 . Run commands from the folder that contains the handbook.
+
+References and local resources
+
+Wackysoft’s original article (https://www.cnblogs.com/wackysoft/p/22144512) · published 2026-08-02.
+
+Beckhoff real-time task properties (https://infosys.beckhoff.com/content/1033/te1010_tc3_realtime_monitor/6847560459.html) — Task priorities, cycles and CPU assignment.
+
+NModbus project (https://github.com/NModbus/NModbus) — Package lineage, protocol support and project API entry point.
+
+OPC Foundation UA .NET Standard (https://github.com/OPCFoundation/UA-.NETStandard) — Reference SDK implementation and samples.
+
+Official MCP C# SDK (https://github.com/modelcontextprotocol/csharp-sdk) — Package roles and SDK ownership.
+
+Local comprehensive handbook and interactive exercises .
+
+Local C# lab instructions . The lab is simulated; the earlier build and protocol checks are documented in the verification record .
+
+This edition targets OpenClaw.NET (https://github.com/clawdotnet/openclaw.net) , with AgentQi Companion as its desktop interface. Industrial knowledge, evaluation and command features beyond the simulator are proposed extensions. See the local OpenClaw.NET integration chapter for configuration and version evidence. Examples and limits are educational; new prose examples are not claims of qualified hardware behavior. Relevant explanations from the existing handbook are included so this edition stands on its own.

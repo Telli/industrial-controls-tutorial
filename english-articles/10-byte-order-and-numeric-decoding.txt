@@ -1,0 +1,105 @@
+Article 10 of 12 · Troubleshooting follow-up
+
+Decoding byte order and multi-register numbers correctly
+
+Expanded English study edition · About 1,274 words · 7 minute read, plus practice
+
+This is an independently written companion to Wackysoft’s article published 2026-08-31. The brief summary below describes the source; the expanded teaching material is original and is not a full translation.
+
+Read the original source (https://www.cnblogs.com/wackysoft/p/22760673)
+
+Brief English source summary
+
+The byte-order follow-up examines why multi-register floating-point values can be decoded incorrectly. It uses four-byte layout names and recommends verifying representation against known device values rather than accepting a number because it looks plausible.
+
+Decode numbers and bits correctly
+
+Separate three representations: bytes on the network, numeric words returned by a library, and the physical value those words encode. A Modbus library returning ushort values has already decoded each word. Calling BitConverter.GetBytes on that word introduces the host’s byte order again. This distinction is the reason apparently sensible endian helpers can be wrong.
+
+Use a known 32-bit bit pattern with four different bytes: 0x42F6E979 , approximately 123.456 as an IEEE 754 single. Define A as its most significant byte and D as its least significant byte. Our contract for the layout names is:
+
+Layout | Observed bytes | Decoded numeric registers
+
+ABCD | 42 F6 E9 79 | 0x42F6, 0xE979
+
+BADC | F6 42 79 E9 | 0xF642, 0x79E9
+
+CDAB | E9 79 42 F6 | 0xE979, 0x42F6
+
+DCBA | 79 E9 F6 42 | 0x79E9, 0xF642
+
+The tested decoder reconstructs each word’s high byte explicitly, permutes to ABCD, reads a big-endian 32-bit integer, and reinterprets its bits as a float. See the complete code in Appendix A and labs/IndustrialLab/Wire.cs . Tests compare against independent constants, not only an encoder/decoder round trip; two mutually wrong functions can pass a round-trip test.
+
+The main handbook includes an interactive exercise for this topic. Its local link appears at the end of this edition.
+
+Boolean meaning does not define the wire layout
+
+A logical Boolean represents true or false. Its storage and interchange format depend on the runtime, mapping and protocol. Beckhoff, for example, documents both single-bit addressing and byte allocation when no single-bit address is specified. Its BIT type has its own rules. These are vendor-specific facts, not proof that every PLC Boolean or every EtherCAT field occupies one byte. [P6] (https://infosys.beckhoff.com/content/1033/tc3_plc_intro/2529360523.html) [P7] (https://infosys.beckhoff.com/content/1033/tc3_plc_intro/2529442699.html)
+
+For a documented packed byte 0x05 ( 00000101 ), bits 0 and 2 are set. Test a bit with (value & (1 << index)) != 0 and validate the index. For a documented byte Boolean, follow the device’s allowed encodings; do not universally assume every nonzero code means true. Modbus’s single-coil write, for example, has a specific ON encoding rather than accepting an arbitrary nonzero register value. Never infer a native interop structure layout from a C# bool[] .
+
+Multi-register values introduce another issue: consistency. If the device updates halves of a value separately, one read can observe a mixed snapshot. Use the vendor’s atomic-read guarantee, a controller snapshot buffer, or a documented version/sequence handshake. Byte-order correction cannot repair a torn value.
+
+Lab checkpoint: verify 25.5, a negative number and the four-byte test pattern. Preserve NaN and infinity long enough for validation to mark the sample invalid; never replace them with zero and call it good data.
+
+Write down the representation at every boundary
+
+A decoder cannot be judged without defining its input. Does it receive raw network bytes, two already decoded 16-bit integers, or a vendor structure marshalled into memory? The same-looking helper can be correct for one input and wrong for another. Put the input contract in the method documentation and in its tests.
+
+The supplied Wire.DecodeFloat receives two numeric ushort values. It explicitly reconstructs their high and low bytes before interpreting the four-byte layout. This avoids relying on the local machine’s representation of a ushort array. The host CPU’s endian order is not a substitute for the device’s documented interchange format.
+
+Trace one value by hand
+
+Take the 32-bit pattern 0x41CC0000 . Its canonical bytes are 41 CC 00 00 . Interpreted as an IEEE 754 single, the sign is positive, the exponent corresponds to a factor of 16, and the fraction produces a significand of 1.59375. The value is therefore 25.5.
+
+If a library returns words 0x41CC and 0x0000 , those numeric values already encode the intended high and low bytes for each word. On a little-endian computer, asking for the in-memory bytes of the first word produces CC 41 . A later blanket reversal can then rearrange the wrong intermediate representation. The failure is caused by mixing two contracts, not by a mysterious floating-point problem.
+
+Choose fixtures that can expose mistakes
+
+Zero is a poor sole test because reversing its bytes changes nothing. Values with repeated bytes can hide some permutations. Use a pattern with four different bytes, a negative value, a known fractional value and special values such as NaN where relevant. Also test wrong-length inputs and invalid configuration values at the appropriate boundary.
+
+An encoder and decoder written with the same mistaken convention can agree with each other. Their round trip passes while both disagree with the machine. Use independent expected register values from a documented fixture or a qualified device capture. Save the origin of each fixture so the test suite remains meaningful after an adapter change.
+
+Interpretation continues after byte order
+
+A correctly decoded float can still be an invalid process observation. It may be outside the documented range, have a bad diagnostic status, use the wrong unit or belong to a different mapping revision. Separate bit decoding from engineering validation. This makes failures easier to locate: a representation failure belongs in the decoder; a physically implausible but correctly encoded value belongs in quality assessment.
+
+A multi-register counter may require unsigned arithmetic rather than floating-point conversion. A scaled integer may be preferable to a float because its unit factor is explicitly defined. Never infer the type from the number of registers alone. Two words could represent several different contracts.
+
+Do not auto-select a layout from a plausible reading
+
+During bench diagnosis, trying documented candidate layouts can reveal a mismatch. In normal operation, switching layouts until the output falls inside a plausible range is dangerous engineering. Several interpretations can occasionally look reasonable, and an invalid value may be evidence of a real fault. Keep the qualified layout fixed in a versioned mapping and raise a diagnostic when the evidence disagrees.
+
+OpenClaw.NET can help explain a captured pair of words using the configured mapping. It should present alternatives as diagnostic hypotheses, not change the mapping automatically. An industrial review record linked from AgentQi Companion can retain the raw capture, mapping revision, expected fixture and reviewed conclusion.
+
+Practice and model answer
+
+Exercise: explain why a test using only 0.0 and a local encode/decode round trip is weak. Then use the four fixtures in the existing C# self-test to verify the same independent bit pattern.
+
+Model answer
+
+All-zero bytes cannot distinguish layouts, and mutually incorrect encode/decode functions can cancel each other’s errors. Independent fixtures with distinct bytes expose incorrect permutations. The supplied four-layout test expects the exact 0x42F6E979 bit pattern, not only an approximately plausible temperature.
+
+Hands-on: try it in the lab
+
+Lab 4. Add −12.75 fixtures in two word orders, then break the decoder on purpose and watch an independent vector catch it.
+
+dotnet run --project .\labs\IndustrialLab -- --self-test
+
+Step-by-step instructions, the exact expected output and troubleshooting are in the handbook’s guided workbook, Lab 4 . Run commands from the folder that contains the handbook.
+
+References and local resources
+
+Wackysoft’s original article (https://www.cnblogs.com/wackysoft/p/22760673) · published 2026-08-31.
+
+NModbus project (https://github.com/NModbus/NModbus) — Package lineage, protocol support and project API entry point.
+
+Beckhoff variable addresses (https://infosys.beckhoff.com/content/1033/tc3_plc_intro/2529360523.html) — Single-bit addresses and byte allocation for Boolean variables.
+
+Beckhoff BIT type (https://infosys.beckhoff.com/content/1033/tc3_plc_intro/2529442699.html) — Vendor-specific BIT and BOOL distinctions.
+
+Local comprehensive handbook and interactive exercises .
+
+Local C# lab instructions . The lab is simulated; the earlier build and protocol checks are documented in the verification record .
+
+This edition targets OpenClaw.NET (https://github.com/clawdotnet/openclaw.net) , with AgentQi Companion as its desktop interface. Industrial knowledge, evaluation and command features beyond the simulator are proposed extensions. See the local OpenClaw.NET integration chapter for configuration and version evidence. Examples and limits are educational; new prose examples are not claims of qualified hardware behavior. Relevant explanations from the existing handbook are included so this edition stands on its own.

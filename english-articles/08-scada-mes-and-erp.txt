@@ -1,0 +1,95 @@
+Article 08 of 12 · Original series
+
+SCADA, MES and ERP as cooperating responsibilities
+
+Expanded English study edition · About 1,009 words · 6 minute read, plus practice
+
+This is an independently written companion to Wackysoft’s article published 2026-08-17. The brief summary below describes the source; the expanded teaching material is original and is not a full translation.
+
+Read the original source (https://www.cnblogs.com/wackysoft/p/22508181)
+
+Brief English source summary
+
+The SCADA/MES/ERP article distinguishes equipment supervision, manufacturing execution and enterprise planning. It follows information through those responsibilities and explains why high-frequency equipment observations and production-level business facts serve different purposes.
+
+Follow an order without losing its meaning
+
+Imagine an order for 2400 filled containers. The enterprise system represents customer commitments, inventory and business planning. Manufacturing execution turns the requirement into scheduled work with a product, recipe revision, line assignment and traceability. The supervisory and control systems coordinate the machine operation and record what the equipment actually did.
+
+Those responsibilities can be implemented by separate products, one integrated product or a mixture of custom and packaged software. The labels describe roles, not a mandatory physical topology. What matters is that the interfaces say which system owns each fact and how changes are reconciled.
+
+Define ownership explicitly
+
+Fact or decision | Suggested owner in this example | Consumers
+
+Customer order and inventory commitment | Enterprise system | Manufacturing planning and reporting.
+
+Batch identity and assigned recipe revision | Manufacturing execution | Supervisory service and traceability records.
+
+Permitted machine transition | Engineered machine control | Supervisory observation and command status.
+
+Acquired process measurement | Acquisition service with source provenance | Historian, HMI and incident analysis.
+
+Reviewed explanation of a stop | Investigation workflow | Maintenance and continuous-improvement records.
+
+This is a proposed allocation for the example. A real project must reconcile it with the plant’s existing systems. If two systems both consider themselves authoritative for a batch’s status, define how conflicts are detected and resolved before writing integration code.
+
+Measurements and business events answer different questions
+
+A temperature stream answers what was observed over time. A batch-started event identifies a business transition. A completion record may include produced quantity, accepted quantity, material lot and process revision. These records are related, but one cannot replace the others.
+
+If a batch completion record says 2400 containers were produced, an investigator may still need the detailed counter observations and rejected-item events that support that total. Conversely, thousands of temperature samples do not identify the customer order unless the data model preserves the relationship. Carry stable batch and asset identities through the relevant events.
+
+Create business facts at a controlled boundary
+
+Use the C# integration service to translate device-specific observations into a documented event model. For example, a controller sequence and completion counter can support a BatchCompleted event. That event should include its own stable ID, the originating asset, batch ID, observed time, relevant source sequence and schema version.
+
+Do not produce a new completion event every time the HMI sees a completion bit still set. Decide how the event is recognized exactly once at the application level, including restart behavior. If source counters reset, distinguish that reset from new production. If evidence is missing, represent an incomplete result instead of manufacturing a precise total.
+
+Make failures visible across the boundary
+
+Suppose MES is unavailable while the line is recording observations. The requirements must state which operations can continue, which must wait and how much local work can be buffered. That decision depends on traceability and operational constraints; it is not automatically solved by putting a message queue in the middle.
+
+Where local continuation is allowed, persist events and deliver them later with stable identities. The receiving system must handle duplicates and late arrivals. A late batch event can be historically correct without describing the machine’s current state. Include event time and receipt time so consumers can make that distinction.
+
+When a command comes from a business workflow, translate it through the machine’s accepted command contract. “Produce this batch” is not the same thing as “write this register.” The request needs validated recipe, asset, quantity, authorization and applicable preconditions, plus a recoverable outcome.
+
+Agent assistance should cross semantic boundaries carefully
+
+An OpenClaw.NET request such as “why was order 123 late?” may need enterprise dates, execution events and equipment evidence. The assistant should identify which part of its answer comes from each system. A machine alarm near the delay is a correlation, not automatic proof of the cause.
+
+An industrial context service behind OpenClaw.NET can assemble a bounded incident package using those identities for an AgentQi Companion investigation. It can then evaluate whether the explanation cites the correct batch, distinguishes planned from actual times and acknowledges missing records. Keep permission checks tied to the underlying systems; possession of an order number should not imply access to every machine or operator record.
+
+Build the smallest useful integration
+
+For self-study, implement one batch lifecycle in a simulator: created, assigned, started and completed. Record each transition with a stable ID. Add a fake receiver that sometimes returns a timeout after saving the event. Prove that retry does not duplicate production. Then add a late event and show that a historical report can update without changing the current machine state.
+
+Practice and model answer
+
+Exercise: a batch is complete on the machine but still running in MES after a network failure. Identify the facts you need before fixing the disagreement.
+
+Model answer
+
+Inspect the batch identity, authoritative completion observation, local event record, outbox/delivery status and MES receipt record. Reconcile using the stable event ID. Do not click Complete again at the machine or create a new business event merely to make the screens agree.
+
+Hands-on: try it in the lab
+
+Lab 10. Lose an MES acknowledgement, restart the sender, and compare a receiver that double-counts with one that deduplicates.
+
+dotnet run --project .\labs\IndustrialLab -- --outbox-demo
+
+Step-by-step instructions, the exact expected output and troubleshooting are in the handbook’s guided workbook, Lab 10 . Run commands from the folder that contains the handbook.
+
+References and local resources
+
+Wackysoft’s original article (https://www.cnblogs.com/wackysoft/p/22508181) · published 2026-08-17.
+
+Microsoft System.Threading.Channels (https://learn.microsoft.com/en-us/dotnet/core/extensions/channels) — Bounded queues, backpressure and full-buffer policies.
+
+SQLite Write-Ahead Logging (https://sqlite.org/wal.html) — Activation, concurrency, checkpointing and limitations.
+
+Local comprehensive handbook and interactive exercises .
+
+Local C# lab instructions . The lab is simulated; the earlier build and protocol checks are documented in the verification record .
+
+This edition targets OpenClaw.NET (https://github.com/clawdotnet/openclaw.net) , with AgentQi Companion as its desktop interface. Industrial knowledge, evaluation and command features beyond the simulator are proposed extensions. See the local OpenClaw.NET integration chapter for configuration and version evidence. Examples and limits are educational; new prose examples are not claims of qualified hardware behavior. Relevant explanations from the existing handbook are included so this edition stands on its own.

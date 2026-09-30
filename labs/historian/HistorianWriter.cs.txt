@@ -1,0 +1,66 @@
+// Lab 7 starter: a batching historian writer for a SEPARATE project.
+// Rename to HistorianWriter.cs in a new console project, then:
+//   dotnet add package Microsoft.Data.Sqlite
+// It is kept out of IndustrialLab so the main lab keeps its single, locked dependency.
+// The SQL it runs is the verified SQL in schema.sql / queries.sql (see verify-historian.py).
+using Microsoft.Data.Sqlite;
+
+public sealed record StoredSample(long ReceiveMs, long? SourceMs, double? Value, string Quality, long Sequence, string BootId);
+
+public sealed class HistorianWriter : IDisposable
+{
+    private readonly SqliteConnection connection;
+
+    public HistorianWriter(string path, string schemaSql)
+    {
+        connection = new SqliteConnection($"Data Source={path}");   // Mode defaults to ReadWriteCreate; that is not WAL
+        connection.Open();
+        using var schema = connection.CreateCommand();
+        schema.CommandText = schemaSql;
+        schema.ExecuteNonQuery();
+        using var check = connection.CreateCommand();
+        check.CommandText = "PRAGMA journal_mode;";
+        string mode = (string)check.ExecuteScalar()!;
+        if (mode != "wal") throw new InvalidOperationException($"Expected WAL, database reports '{mode}'.");
+        using var tag = connection.CreateCommand();
+        tag.CommandText = "INSERT OR IGNORE INTO tag VALUES (1, 'tank-01', 'temperature', 'degC', 1);";
+        tag.ExecuteNonQuery();
+    }
+
+    // One transaction per batch: hundreds of rows cost about one fsync instead of hundreds.
+    public int WriteBatch(IReadOnlyList<StoredSample> batch)
+    {
+        using var tx = connection.BeginTransaction();
+        using var insert = connection.CreateCommand();
+        insert.Transaction = tx;
+        insert.CommandText = """
+            INSERT OR IGNORE INTO sample (tag_key, receive_ms, source_ms, value, quality, sequence, boot_id)
+            VALUES (1, :receive_ms, :source_ms, :value, :quality, :sequence, :boot_id);
+            """;
+        var receive = insert.Parameters.Add(":receive_ms", SqliteType.Integer);
+        var source = insert.Parameters.Add(":source_ms", SqliteType.Integer);
+        var value = insert.Parameters.Add(":value", SqliteType.Real);
+        var quality = insert.Parameters.Add(":quality", SqliteType.Text);
+        var sequence = insert.Parameters.Add(":sequence", SqliteType.Integer);
+        var boot = insert.Parameters.Add(":boot_id", SqliteType.Text);
+        int written = 0;
+        foreach (var s in batch)
+        {
+            receive.Value = s.ReceiveMs;
+            source.Value = (object?)s.SourceMs ?? DBNull.Value;           // unknown device time stays NULL
+            value.Value = (object?)s.Value ?? DBNull.Value;               // no fabricated zero for bad samples
+            quality.Value = s.Quality;
+            sequence.Value = s.Sequence;
+            boot.Value = s.BootId;
+            written += insert.ExecuteNonQuery();                          // 0 when a replay was ignored
+        }
+        tx.Commit();
+        return written;
+    }
+
+    public void Dispose() => connection.Dispose();
+}
+
+// Suggested driver (Lab 7, step 4): poll http://localhost:5088/api/history every second,
+// convert each sample, and call WriteBatch. Measure rows/s with a Stopwatch and compare it
+// with the rate you need (the simulator produces 4 samples/s; a plant might need 1000/s).

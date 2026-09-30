@@ -1,0 +1,369 @@
+{
+  "checked_on": "2026-09-29",
+  "scope": "9 original series articles and 3 subsequent industrial troubleshooting articles",
+  "articles": [
+    {
+      "url": "https://www.cnblogs.com/wackysoft/p/22144512",
+      "title": ".NET工控开发：一个被低估的赛道",
+      "date": "2026-08-02 09:00",
+      "headings": [
+        "前言",
+        "什么是工控",
+        "PLC：工控的\"大脑\"",
+        "通信协议：上位机和PLC之间的\"语言\"",
+        ".NET在工控领域的生态位",
+        "这个系列会聊什么",
+        "后记"
+      ],
+      "links": [],
+      "chars": 2529,
+      "source_id": "S1",
+      "content_sha256": "15d66afffc7dfb46d643b3dabf21a752831a30062575d5b1ff18bd4889cceb96"
+    },
+    {
+      "url": "https://www.cnblogs.com/wackysoft/p/22188247",
+      "title": "通信协议实战：Modbus与OPC UA怎么选",
+      "date": "2026-08-04 08:06",
+      "headings": [
+        "前言",
+        "Modbus：先学会走，再学跑",
+        "OPC UA：为什么说它代表未来",
+        "两个协议怎么选",
+        "没硬件怎么学",
+        "三个坑",
+        "后记"
+      ],
+      "links": [],
+      "chars": 4158,
+      "source_id": "S2",
+      "content_sha256": "e75825cca5532d5a1ccc370460131b63a61df10b78491ff55d51b7d0f2aac02c"
+    },
+    {
+      "url": "https://www.cnblogs.com/wackysoft/p/22223863",
+      "title": "工控生态之数据与业务：采集到的数据怎么存、怎么管、怎么用",
+      "date": "2026-08-05 08:08",
+      "headings": [
+        "前言",
+        "数据存储：先分清两类数据",
+        "SQLite：工控上位机的默认选择",
+        "EF Core还是Dapper",
+        "InfluxDB：时序数据的正确打开方式",
+        "Stateless：设备状态机没那么难",
+        "Elsa：当业务流程复杂到状态机扛不住",
+        "三层架构怎么落地",
+        "后记"
+      ],
+      "links": [],
+      "chars": 7083,
+      "source_id": "S3",
+      "content_sha256": "3e0bfcc3df61f20dc85b06351e18be2f09d7150105cd1dfb91f4fa22ad3d18e1"
+    },
+    {
+      "url": "https://www.cnblogs.com/wackysoft/p/22258497",
+      "title": "工控生态之展示与交互：怎么让工业软件不再\"丑\"",
+      "date": "2026-08-06 08:11",
+      "headings": [
+        "前言",
+        "界面框架：WinForm、WPF还是Avalonia",
+        "控件库：HandyControl告别土味",
+        "让工业软件不再\"丑\"的三个原则",
+        "一个完整的展示层架构",
+        "后记"
+      ],
+      "links": [],
+      "chars": 5389,
+      "source_id": "S4",
+      "content_sha256": "d0e96fdc39f11b05d15a78fbf059b5e8e813794b03f52d881df45bbe23b93ad0"
+    },
+    {
+      "url": "https://www.cnblogs.com/wackysoft/p/22292586",
+      "title": ".NET工控概念科普——工控的\"实时\"和Web的\"实时\"不是一回事",
+      "date": "2026-08-07 09:22",
+      "headings": [
+        "前言",
+        "Web的\"实时\"：够快就行",
+        "工控的\"实时\"：必须确定",
+        "硬实时 vs 软实时",
+        "为什么PLC能做硬实时，.NET不能",
+        "上位机开发的\"实时\"技巧",
+        "后记"
+      ],
+      "links": [],
+      "chars": 3494,
+      "source_id": "S5",
+      "content_sha256": "325fc030f8ae3aef0c9dbd6239173147a74b287b4cb9a9d1497ea2ea356aaf4e"
+    },
+    {
+      "url": "https://www.cnblogs.com/wackysoft/p/22358630",
+      "title": ".NET工控概念科普——PLC扫描周期：理解了它才算入了工控的门",
+      "date": "2026-08-10 09:25",
+      "headings": [
+        "前言",
+        "PLC的三步循环",
+        "扫描周期到底有多长",
+        "扫描周期为什么影响上位机",
+        "Modbus和OPC UA在扫描周期下的差异",
+        "一个实战场景：温度采集的采样率选择",
+        "扫描周期与上位机架构设计",
+        "后记"
+      ],
+      "links": [],
+      "chars": 3043,
+      "source_id": "S6",
+      "content_sha256": "9ecc776bc79a63c0b3f4b8cc4931110b9752e32e2347ea5e8dbaa28aff834215"
+    },
+    {
+      "url": "https://www.cnblogs.com/wackysoft/p/22405680",
+      "title": ".NET工控概念科普——下位机和固件，上位机开发者必须搞懂的\"另一半\"",
+      "date": "2026-08-12 09:20",
+      "headings": [
+        "前言",
+        "什么是下位机",
+        "下位机和上位机的边界在哪",
+        "固件是什么",
+        "为什么上位机开发者要关心固件版本",
+        "一个真实的使用场景",
+        "后记"
+      ],
+      "links": [],
+      "chars": 3630,
+      "source_id": "S7",
+      "content_sha256": "3a1ab0e5ca2caf40a6f5356c3c339efc77a23be91279b134b33951ec9f59cffc"
+    },
+    {
+      "url": "https://www.cnblogs.com/wackysoft/p/22508181",
+      "title": ".NET工控概念科普——SCADA、MES、ERP三种系统的边界",
+      "date": "2026-08-17 09:07",
+      "headings": [
+        "前言",
+        "先说结论：三个系统管的是不同层面的事",
+        "SCADA是什么：设备的\"眼睛和耳朵\"",
+        "MES是什么：车间的\"调度员\"",
+        "ERP是什么：企业的\"大管家\"",
+        "三者怎么配合：一条订单的旅行",
+        "为什么 MES 已经采了数据，上位机还要单独采一遍",
+        "你写的.NET程序站在哪",
+        "后记"
+      ],
+      "links": [],
+      "chars": 4187,
+      "source_id": "S8",
+      "content_sha256": "0107654d10a0aaa6bd74f931fad922761ee994bece79fb1488938f4f5d5a599d"
+    },
+    {
+      "url": "https://www.cnblogs.com/wackysoft/p/22706114",
+      "title": ".NET工控生态总览：带你厘清工控项目的典型架构",
+      "date": "2026-08-27 09:32",
+      "headings": [
+        "前言",
+        "一、先上全景图：你的程序站在哪",
+        "二、从下往上，逐层拆解",
+        "三、你写的 .NET 程序，到底干了啥",
+        "四、一个反应釜，把前面几篇全串起来",
+        "后记"
+      ],
+      "links": [],
+      "chars": 2913,
+      "source_id": "S9",
+      "content_sha256": "ddc9440f7a81fdff6953d3d6bb8395cddb06cc500ce19e45103d66f8659546d9"
+    },
+    {
+      "url": "https://www.cnblogs.com/wackysoft/p/22760673",
+      "title": ".NET上位机踩坑：大小端和字节序",
+      "date": "2026-08-31 10:17",
+      "headings": [
+        "前言",
+        "一、大小端到底是什么",
+        "二、工控用 ABCD / BADC / CDAB / DCBA 四种记号",
+        "三、经典翻车现场：浮点数读成 1.347e-38",
+        "四、C# 示例：四种顺序怎么转",
+        "五、怎么快速判断是不是这个坑",
+        "后记"
+      ],
+      "links": [],
+      "chars": 3511,
+      "source_id": "S10",
+      "content_sha256": "35503679d61cc5bef4168c809afcbee9842a2eb30e96bb36d284569d69b65092"
+    },
+    {
+      "url": "https://www.cnblogs.com/wackysoft/p/22896485",
+      "title": ".NET上位机踩坑：BOOL和BIT",
+      "date": "2026-09-09 10:27",
+      "headings": [
+        "前言",
+        "概念",
+        "容易混淆的点",
+        "C#中要怎么玩",
+        "后记"
+      ],
+      "links": [],
+      "chars": 3954,
+      "source_id": "S11",
+      "content_sha256": "017702f482c25d7f0ddd47931c037cabcba6b776ac3f38192208889ed196645b"
+    },
+    {
+      "url": "https://www.cnblogs.com/wackysoft/p/22947367",
+      "title": ".NET上位机踩坑：为什么有时读取数据需要Sleep？",
+      "date": "2026-09-14 09:21",
+      "headings": [
+        "前言",
+        "PLC扫描周期未到",
+        "TCP存在粘包/半包",
+        "环形缓冲区(Ring Buffer)",
+        "后记"
+      ],
+      "links": [
+        "https://mp.weixin.qq.com/s?__biz=MzA5ODExOTcxMg==&mid=2453724085&idx=1&sn=1954f941fab100dd732174e9679d258d&scene=21#wechat_redirect"
+      ],
+      "chars": 4405,
+      "source_id": "S12",
+      "content_sha256": "8f89f71bb227c9eda332b11758fd393b84ddf0967d30a6aab37d40c948650b0d"
+    }
+  ],
+  "primary_references": [
+    {
+      "id": "P1",
+      "title": "Beckhoff real-time task properties",
+      "url": "https://infosys.beckhoff.com/content/1033/te1010_tc3_realtime_monitor/6847560459.html",
+      "supports": "Task priorities, cycles and CPU assignment."
+    },
+    {
+      "id": "P2",
+      "title": "OPC UA Part 4 MonitoredItems",
+      "url": "https://reference.opcfoundation.org/Core/Part4/v105/docs/5.13.1",
+      "supports": "Sampling intervals, filters, queues, revisions and overflow."
+    },
+    {
+      "id": "P3",
+      "title": "NModbus project",
+      "url": "https://github.com/NModbus/NModbus",
+      "supports": "Package lineage, protocol support and project API entry point."
+    },
+    {
+      "id": "P4",
+      "title": "OPC Foundation UA .NET Standard",
+      "url": "https://github.com/OPCFoundation/UA-.NETStandard",
+      "supports": "Reference SDK implementation and samples."
+    },
+    {
+      "id": "P5",
+      "title": "OASIS MQTT 5.0 standard",
+      "url": "https://docs.oasis-open.org/mqtt/mqtt/v5.0/mqtt-v5.0.html",
+      "supports": "Delivery semantics and protocol behavior."
+    },
+    {
+      "id": "P6",
+      "title": "Beckhoff variable addresses",
+      "url": "https://infosys.beckhoff.com/content/1033/tc3_plc_intro/2529360523.html",
+      "supports": "Single-bit addresses and byte allocation for Boolean variables."
+    },
+    {
+      "id": "P7",
+      "title": "Beckhoff BIT type",
+      "url": "https://infosys.beckhoff.com/content/1033/tc3_plc_intro/2529442699.html",
+      "supports": "Vendor-specific BIT and BOOL distinctions."
+    },
+    {
+      "id": "P8",
+      "title": "Microsoft NetworkStream ReadAsync",
+      "url": "https://learn.microsoft.com/en-us/dotnet/api/system.net.sockets.networkstream.readasync?view=net-10.0",
+      "supports": "Partial reads, cancellation and peer shutdown."
+    },
+    {
+      "id": "P9",
+      "title": "Microsoft System.Threading.Channels",
+      "url": "https://learn.microsoft.com/en-us/dotnet/core/extensions/channels",
+      "supports": "Bounded queues, backpressure and full-buffer policies."
+    },
+    {
+      "id": "P10",
+      "title": "SQLite Write-Ahead Logging",
+      "url": "https://sqlite.org/wal.html",
+      "supports": "Activation, concurrency, checkpointing and limitations."
+    },
+    {
+      "id": "P11",
+      "title": "InfluxData The future of Flux",
+      "url": "https://docs.influxdata.com/flux/v0/future-of-flux/",
+      "supports": "Flux support boundaries between product generations."
+    },
+    {
+      "id": "P12",
+      "title": "Stateless project",
+      "url": "https://github.com/dotnet-state-machine/stateless",
+      "supports": "State-machine API and concurrency limitations."
+    },
+    {
+      "id": "P13",
+      "title": "Microsoft Windows Forms .NET 8",
+      "url": "https://learn.microsoft.com/en-us/dotnet/desktop/winforms/whats-new/net80",
+      "supports": "Data binding and MVVM capabilities."
+    },
+    {
+      "id": "P14",
+      "title": "ScottPlot 5 changes",
+      "url": "https://scottplot.net/faq/version-5.0/",
+      "supports": "SkiaSharp rendering backend."
+    },
+    {
+      "id": "P15",
+      "title": "Official MCP C# SDK",
+      "url": "https://github.com/modelcontextprotocol/csharp-sdk",
+      "supports": "Package roles and SDK ownership."
+    },
+    {
+      "id": "P16",
+      "title": "MCP C# SDK getting started",
+      "url": "https://github.com/modelcontextprotocol/csharp-sdk/blob/main/docs/concepts/getting-started.md",
+      "supports": "HTTP server registration, hosting and local host filtering."
+    },
+    {
+      "id": "P17",
+      "title": "OpenClaw.NET project and AgentQi Companion",
+      "url": "https://github.com/clawdotnet/openclaw.net/blob/603b567646423a8090a16836aa155f9b011aaa00/README.md",
+      "supports": "Runtime identity, desktop product and ecosystem."
+    },
+    {
+      "id": "P18",
+      "title": "OpenClaw.NET architecture boundaries",
+      "url": "https://github.com/clawdotnet/openclaw.net/blob/603b567646423a8090a16836aa155f9b011aaa00/docs/ARCHITECTURE_BOUNDARIES.md",
+      "supports": "Runtime, gateway, extensions and deployment responsibilities."
+    },
+    {
+      "id": "P19",
+      "title": "OpenClaw.NET MCP configuration model",
+      "url": "https://github.com/clawdotnet/openclaw.net/blob/603b567646423a8090a16836aa155f9b011aaa00/src/OpenClaw.Core/Plugins/PluginModels.cs",
+      "supports": "Plugins.Mcp, server fields, transport names and timeout units."
+    },
+    {
+      "id": "P20",
+      "title": "OpenClaw.NET MCP client registry",
+      "url": "https://github.com/clawdotnet/openclaw.net/blob/603b567646423a8090a16836aa155f9b011aaa00/src/OpenClaw.Agent/Plugins/McpServerToolRegistry.cs",
+      "supports": "Streamable HTTP, discovery, prefixes and startup logging."
+    },
+    {
+      "id": "P21",
+      "title": "OpenClaw.NET quickstart",
+      "url": "https://github.com/clawdotnet/openclaw.net/blob/603b567646423a8090a16836aa155f9b011aaa00/docs/QUICKSTART.md",
+      "supports": "Source commands, setup-generated config path and gateway entry points."
+    },
+    {
+      "id": "P22",
+      "title": "OpenClaw.NET native C# tool contract",
+      "url": "https://github.com/clawdotnet/openclaw.net/blob/603b567646423a8090a16836aa155f9b011aaa00/src/OpenClaw.Core/Abstractions/ITool.cs",
+      "supports": "ITool signature and JSON schema contract."
+    },
+    {
+      "id": "P23",
+      "title": "OpenClaw.NET gateway settings example",
+      "url": "https://github.com/clawdotnet/openclaw.net/blob/603b567646423a8090a16836aa155f9b011aaa00/src/OpenClaw.Gateway/appsettings.json",
+      "supports": "OpenClaw root and Plugins.Mcp configuration nesting."
+    },
+    {
+      "id": "P24",
+      "title": "OpenClaw.NET MCP roles",
+      "url": "https://github.com/clawdotnet/openclaw.net/blob/603b567646423a8090a16836aa155f9b011aaa00/docs/MCPAPP.md",
+      "supports": "Distinguishes the gateway MCP server, external MCP client and MCP Apps."
+    }
+  ]
+}

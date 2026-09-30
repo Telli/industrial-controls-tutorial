@@ -1,0 +1,136 @@
+Article 03 of 12 · Original series
+
+Turning industrial observations into reliable records and workflows
+
+Expanded English study edition · About 1,657 words · 9 minute read, plus practice
+
+This is an independently written companion to Wackysoft’s article published 2026-08-05. The brief summary below describes the source; the expanded teaching material is original and is not a full translation.
+
+Read the original source (https://www.cnblogs.com/wackysoft/p/22223863)
+
+Brief English source summary
+
+The data-and-business article distinguishes configuration and business records from time-series measurements. It surveys relational access, time-series storage, state machines and workflow engines, arguing for a clear boundary between persistence, business behavior and presentation.
+
+Store measurements and business facts
+
+Different records serve different questions. Configuration answers “what is this tag?” Measurements answer “what happened over time?” Alarms answer “which condition required attention?” Production events answer “what was made?” Audit records answer “who requested and authorized what?” Keep those meanings distinct even if an early prototype stores them in one database.
+
+SQLite is useful for a local study project and many embedded applications. Use transactions, indexes and measured workloads before deciding it is too small. WAL can let readers and a writer proceed concurrently, but it does not create unlimited parallel writers. Enable it with an actual PRAGMA journal_mode=WAL; operation and inspect the result. Mode=ReadWriteCreate merely controls opening/creation behavior; it is not a WAL setting. Plan checkpointing and proper backups that account for WAL state. [P10] (https://sqlite.org/wal.html)
+
+A conceptual schema for your extension lab follows. It is a design exercise, not a claim that the supplied simulator persists these records.
+
+TagDefinition(AssetId, TagId, Unit, Scale, Offset, MappingVersion)
+Sample(EventId, AssetId, TagId, Value, Quality, SourceTime, ReceiveTime,
+       SourceSequence, BootId, MappingVersion)
+AlarmEvent(EventId, AlarmId, Transition, Time, EvidenceId)
+BatchEvent(EventId, BatchId, AssetId, EventType, Time, PayloadVersion)
+Command(CommandId, RequestHash, ActorId, ApprovalId, State, ExpiresAt)
+Outbox(EventId, EventType, Payload, CreatedAt, DeliveredAt)
+
+Capacity before products
+
+For 200 tags at 5 samples/s, the maximum unsuppressed rate is 1000 samples/s , or 86.4 million/day . At an illustrative 40 bytes/sample that is 3.456 GB/day before indexes, record overhead, replication and compression. These numbers are a sizing exercise, not a database benchmark. Estimate a retention budget and measure with representative writes and queries.
+
+A time-series database can make retention, aggregation and time-range queries convenient. It is not automatically required above a fixed number of rows. If evaluating InfluxDB, match the client and query language to the chosen generation: the source article’s bucket/org/Flux example belongs to the InfluxDB 2 style; InfluxDB 3 does not support Flux. [P11] (https://docs.influxdata.com/flux/v0/future-of-flux/)
+
+Decide which information may be aggregated. For a one-minute window, save count, min, max, mean and quality coverage when appropriate. A mean alone can erase a short excursion. Keep event transitions independently of a trend’s downsampling. Do not interpolate a missing interval and then present it as measured data.
+
+Reliable delivery to MES
+
+Suppose a batch-completed event is committed locally but the MES call times out. You do not know whether MES processed it. Give the event a stable ID and make the receiver deduplicate it. A transactional outbox records the event in the same local transaction as the business change; a worker delivers it later and records acknowledgement. This is a proposed pattern for this architecture. It trades immediate availability for recoverable delivery and explicit retry behavior.
+
+Use EF Core where tracked business entities and migrations help, and targeted SQL or Dapper where direct queries are clearer. Neither tool removes the need to batch writes, inspect query plans or manage transactions. Avoid sharing a mutable database context between concurrent workers.
+
+Model state, alarms and command outcomes
+
+Keep observed state , requested action and workflow state separate. The controller may report Heating. A user may request Stop. The command may be AwaitingAcknowledgement. Combining those into one Boolean such as IsRunning makes failures impossible to describe accurately.
+
+State | Example event | Guard or meaning
+
+Idle → Heating | Controller reports accepted start and heating feedback | Do not infer from an HMI click alone.
+
+Heating → Holding | Controller reports target reached | Use documented dwell/tolerance where applicable.
+
+Any operational state → Fault | Controller fault | Explicitly define this transition from every required state.
+
+Any observation → Unknown | Communication loss | The application lacks evidence; it has not proved the physical machine stopped.
+
+Fault → Idle | Validated recovery reported by controller | Alarm acknowledgement alone is insufficient.
+
+Stateless can make transition rules readable. It does not supply missing transitions, durable state or physical safety. Serialize access to each state machine; asynchronous capability does not imply that simultaneous calls are safe. The project documents this limitation. [P12] (https://github.com/dotnet-state-machine/stateless) The source article’s sample only permits its fault trigger from selected states, despite a broader explanatory comment.
+
+An alarm has a lifecycle
+
+Imagine a supervisory high-temperature condition activates at 65 °C and clears at 63 °C. That hysteresis prevents chatter around one threshold. Add an on-delay only when the process requirement allows it. Acknowledging an active alarm records that someone has seen it; it does not clear the process condition. Record activation, acknowledgement, return to normal and any shelving as separate events.
+
+If the temperature quality becomes bad, you cannot conclude the high-temperature condition cleared. Preserve the appropriate alarm state and raise or display the communication issue. Protective trips have separate engineering requirements; a C# threshold check or AI explanation is not their substitute.
+
+Commands need outcomes
+
+Proposed → Approved → Dispatched → Accepted → Completed
+             ↓             ↓          ↓
+          Expired        Unknown     Rejected / Failed
+
+These are proposed application states. “Unknown” is essential: a connection can fail after the controller acts but before acknowledgement arrives. Blindly resending may repeat an operation. A device contract should define command IDs, command parameters, acknowledgement, result and recovery behavior. When supported, a mailbox-style handshake lets the PLC accept a command once and report the same result on a retry. Such a contract must be engineered with the PLC programmer.
+
+Elsa or another durable workflow engine becomes relevant for long-running human work: assigning an investigation, waiting for evidence, escalating overdue work and recording completion. Keep that workflow separate from the machine’s cyclic program. Do not restart equipment automatically because a maintenance ticket was closed.
+
+Follow a record beyond the happy path
+
+Consider a station that produces one completed-batch event. The device service records the event locally and sends it to a production system. The remote system commits the event, but the connection breaks before its response reaches the sender. If the sender simply tries again with a new ID, the batch may be counted twice.
+
+The problem is not solved by choosing a faster ORM. It is solved by defining the identity and lifecycle of the business fact. Give the event one stable ID at creation, preserve it across retries, and make the receiver recognize that ID. Keep “observed locally,” “queued for delivery” and “acknowledged remotely” as distinct states.
+
+Design queries before tables
+
+Write five questions your storage must answer: the latest usable temperature, a one-hour trend, the alarm sequence around a stop, all batches associated with a recipe revision, and the person who approved a request. These questions have different access patterns. One giant table with a timestamp and JSON payload may be convenient at first but can obscure indexing, validation and retention decisions.
+
+For a trend, asset/tag/time ordering is often useful. For an audit, command identity and actor matter. For a batch report, business identity and process phase matter. Preserve the link between a summarized record and its underlying observations so an explanation can be checked later.
+
+Plan the behavior of a full disk
+
+A local spool buys recovery time during an outage. It is not infinite. Decide its capacity, what is retained first, whether it may discard anything, and how operators learn that it is approaching its limit. If the recording requirement is strict, silently dropping data is not an acceptable fallback. If a display cache discards old points, count those drops and keep that cache separate from the durable record.
+
+When a service restarts, it should discover unfinished work from persistent state. An in-memory timer that was going to retry an event is not sufficient evidence that the retry will happen. Record the work, then let a restartable worker perform it.
+
+Workflow is an explanation of responsibility
+
+Use a state machine when you need to say which transitions are allowed. Use a durable workflow when a process waits across time, systems or people. For example, investigating a recurring fault might require attaching evidence, assigning an engineer, waiting for an inspection and recording a resolution. None of those workflow states should implicitly reset the machine.
+
+OpenClaw.NET can prepare a proposed investigation record from a bounded evidence window. An industrial evaluation service for this AgentQi-based workflow could check that the record cites the right asset and procedure revision. The persistence service should store the proposal’s evidence references and subsequent review outcome so that agent quality can be evaluated against actual decisions.
+
+Practice and model answer
+
+Exercise: draw the timeline for a batch event whose acknowledgement is lost. Show both a retry and a service restart. Identify exactly where the same event ID is stored.
+
+Model answer
+
+Create the event and outbox record in one local transaction. Send the stable ID to a receiver that deduplicates within its commit. If acknowledgement is lost, the outbox remains pending and the same ID is retried after restart. Mark delivery complete only after the appropriate acknowledgement; do not recreate the business event.
+
+Hands-on: try it in the lab
+
+Lab 7. Load a verified SQLite historian, find a 30-second gap and watch a mean hide a 6 °C excursion; then deliver a batch event exactly once in effect (Lab 10).
+
+python .\labs\historian\verify-historian.py
+dotnet run --project .\labs\IndustrialLab -- --outbox-demo
+
+Step-by-step instructions, the exact expected output and troubleshooting are in the handbook’s guided workbook, Lab 7 . Run commands from the folder that contains the handbook.
+
+References and local resources
+
+Wackysoft’s original article (https://www.cnblogs.com/wackysoft/p/22223863) · published 2026-08-05.
+
+Microsoft System.Threading.Channels (https://learn.microsoft.com/en-us/dotnet/core/extensions/channels) — Bounded queues, backpressure and full-buffer policies.
+
+SQLite Write-Ahead Logging (https://sqlite.org/wal.html) — Activation, concurrency, checkpointing and limitations.
+
+InfluxData The future of Flux (https://docs.influxdata.com/flux/v0/future-of-flux/) — Flux support boundaries between product generations.
+
+Stateless project (https://github.com/dotnet-state-machine/stateless) — State-machine API and concurrency limitations.
+
+Local comprehensive handbook and interactive exercises .
+
+Local C# lab instructions . The lab is simulated; the earlier build and protocol checks are documented in the verification record .
+
+This edition targets OpenClaw.NET (https://github.com/clawdotnet/openclaw.net) , with AgentQi Companion as its desktop interface. Industrial knowledge, evaluation and command features beyond the simulator are proposed extensions. See the local OpenClaw.NET integration chapter for configuration and version evidence. Examples and limits are educational; new prose examples are not claims of qualified hardware behavior. Relevant explanations from the existing handbook are included so this edition stands on its own.

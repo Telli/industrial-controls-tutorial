@@ -1,0 +1,91 @@
+Article 11 of 12 · Troubleshooting follow-up
+
+Boolean values, packed bits and device memory layouts
+
+Expanded English study edition · About 1,011 words · 6 minute read, plus practice
+
+This is an independently written companion to Wackysoft’s article published 2026-09-09. The brief summary below describes the source; the expanded teaching material is original and is not a full translation.
+
+Read the original source (https://www.cnblogs.com/wackysoft/p/22896485)
+
+Brief English source summary
+
+The BOOL/BIT follow-up distinguishes a logical Boolean from a packed bit field and illustrates masking individual flags. The useful lesson is to verify the representation at the interface; storage rules should not be generalized from one runtime or device.
+
+Ask four different questions
+
+When a variable represents on/off information, ask what it means logically, how it is stored by the controller, how it is encoded by the communication protocol and how the library presents it to C#. These questions may have different answers. A logical true value can be transported as a packed bit, a byte code, a protocol-specific field or a native interop representation.
+
+Do not infer one of those answers from another. A C# array of Boolean values does not define a PLC memory map. A field named BOOL in a device manual does not establish the layout of a whole structure. Padding, alignment, packing, valid codes and address conventions belong to the actual interface contract.
+
+Work through a packed status byte
+
+For a fictional training device, define bit 0 as Ready, bit 1 as Running, bit 2 as FaultPresent and bit 7 as MaintenanceMode. Bits 3–6 are reserved. The numbering is explicitly least-significant-bit first. With a received byte of 0x85 , the binary representation is 10000101 .
+
+Flag | Mask | Result for 0x85
+
+Ready, bit 0 | 0x01 | Set.
+
+Running, bit 1 | 0x02 | Clear.
+
+FaultPresent, bit 2 | 0x04 | Set.
+
+MaintenanceMode, bit 7 | 0x80 | Set.
+
+The supplied C# helper tests (packed & (1 << bit)) != 0 after checking that the index is 0–7. That answers whether a bit is set. It does not decide whether the combined machine state is valid. Ready and FaultPresent might be permitted together or indicate an inconsistency, depending on the fictional device contract.
+
+A byte Boolean needs its own validity rule
+
+Now imagine a separate byte that the manual defines as 0 for false and 1 for true, with all other values reserved. If the device sends 5, converting every nonzero value to true hides a protocol or mapping problem. The appropriate result is an invalid observation or a diagnostic according to the contract.
+
+Another device may explicitly define all nonzero byte values as true. That is a different contract and can justify a different decoder. The point is not that one convention is universally correct. The point is that your code should implement the documented convention and preserve unexpected input for diagnosis.
+
+Vendor documentation can help establish a specific layout. Beckhoff, for example, documents byte allocation for Boolean variables when no single-bit address is given, and separately describes its BIT type. Those examples support careful reading of the vendor contract; they do not establish a universal layout for every PLC, fieldbus or native structure.
+
+Reading one bit is easier than safely writing one bit
+
+Suppose two clients share a status/control byte. Both read 0. Client A sets bit 0 and writes 1. Client B, using its earlier read, sets bit 1 and writes 2. The final value is 2, so A’s update has been lost. Each client performed a locally correct mask operation, but the combined read-modify-write sequence was not atomic.
+
+Avoid solving shared control by having every client rewrite the entire byte. Use a supported atomic bit operation, a single writer, or a controller command contract that owns the update. Which choice is appropriate depends on the device. A lock in one C# process does not serialize another process or the PLC’s own logic.
+
+Normalize flags into meaningful observations
+
+A device adapter can publish named flags while preserving the raw status word in diagnostic evidence. Keep the mapping revision with the interpretation. If a firmware update assigns meaning to a formerly reserved bit, the application should not automatically reinterpret historical records using the new definition.
+
+For event detection, distinguish a level from an edge. FaultPresent=true says the condition is currently reported; a transition from false to true may be used to create an activation event. If the service restarts while the flag is already true, define whether it records “active on startup,” reconstructs an existing alarm or creates a new activation. The same level should not create unlimited duplicate alarm events.
+
+Give agents meanings and uncertainty
+
+An OpenClaw.NET response should say that the controller reported a fault flag, with its timestamp and quality. It should not infer the specific failed component from that bit alone. A proposed industrial knowledge tool can retrieve the fault-code definition for the correct device revision and attach it to the evidence shown in AgentQi Companion.
+
+Do not expose a generic “set any bit” tool as a shortcut for industrial actions. A named operation with validated parameters and appropriate permissions is easier to reason about, audit and test. The supplied study tools deliberately avoid bit writes and physical command execution.
+
+Practice and model answer
+
+Exercise: decode 0x85 using the fictional map, explain the shared-byte lost update, and decide what to do with a byte value of 5 under a strict 0/1 contract.
+
+Model answer
+
+Ready, FaultPresent and MaintenanceMode are set; Running is clear. The two-client update loses bit 0 because B writes a stale whole-byte value. A value of 5 is invalid under the strict 0/1 contract and should not be silently converted to true.
+
+Hands-on: try it in the lab
+
+Lab 13. Decode the lab tank’s packed status word and its signed ×0.1 temperature register from Appendix D, then cross-check with an independent client.
+
+python .\labs\verify-labs.py
+
+Step-by-step instructions, the exact expected output and troubleshooting are in the handbook’s guided workbook, Lab 13 . Run commands from the folder that contains the handbook.
+
+References and local resources
+
+Wackysoft’s original article (https://www.cnblogs.com/wackysoft/p/22896485) · published 2026-09-09.
+
+Beckhoff variable addresses (https://infosys.beckhoff.com/content/1033/tc3_plc_intro/2529360523.html) — Single-bit addresses and byte allocation for Boolean variables.
+
+Beckhoff BIT type (https://infosys.beckhoff.com/content/1033/tc3_plc_intro/2529442699.html) — Vendor-specific BIT and BOOL distinctions.
+
+Local comprehensive handbook and interactive exercises .
+
+Local C# lab instructions . The lab is simulated; the earlier build and protocol checks are documented in the verification record .
+
+This edition targets OpenClaw.NET (https://github.com/clawdotnet/openclaw.net) , with AgentQi Companion as its desktop interface. Industrial knowledge, evaluation and command features beyond the simulator are proposed extensions. See the local OpenClaw.NET integration chapter for configuration and version evidence. Examples and limits are educational; new prose examples are not claims of qualified hardware behavior. Relevant explanations from the existing handbook are included so this edition stands on its own.

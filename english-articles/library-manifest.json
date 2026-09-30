@@ -1,0 +1,127 @@
+{
+  "created_on": "2026-09-29",
+  "edition_type": "Original expanded English study companions with brief source summaries, not full translations \u00b7 second edition with hands-on lab links",
+  "word_count": 17664,
+  "articles": [
+    {
+      "id": "S1",
+      "title": "Where C# fits in an industrial control system",
+      "filename": "01-dotnet-industrial-controls.html",
+      "text_filename": "01-dotnet-industrial-controls.txt",
+      "word_count": 1359,
+      "minutes": 7,
+      "source_url": "https://www.cnblogs.com/wackysoft/p/22144512",
+      "base_word_count": 1308
+    },
+    {
+      "id": "S2",
+      "title": "Choosing Modbus, OPC UA and MQTT for a C# application",
+      "filename": "02-modbus-opc-ua-and-mqtt.html",
+      "text_filename": "02-modbus-opc-ua-and-mqtt.txt",
+      "word_count": 1452,
+      "minutes": 8,
+      "source_url": "https://www.cnblogs.com/wackysoft/p/22188247",
+      "base_word_count": 1386
+    },
+    {
+      "id": "S3",
+      "title": "Turning industrial observations into reliable records and workflows",
+      "filename": "03-data-storage-and-workflows.html",
+      "text_filename": "03-data-storage-and-workflows.txt",
+      "word_count": 1657,
+      "minutes": 9,
+      "source_url": "https://www.cnblogs.com/wackysoft/p/22223863",
+      "base_word_count": 1586
+    },
+    {
+      "id": "S4",
+      "title": "Designing an industrial interface that communicates the truth",
+      "filename": "04-industrial-interfaces.html",
+      "text_filename": "04-industrial-interfaces.txt",
+      "word_count": 1174,
+      "minutes": 6,
+      "source_url": "https://www.cnblogs.com/wackysoft/p/22258497",
+      "base_word_count": 1112
+    },
+    {
+      "id": "S5",
+      "title": "Understanding real time, deadlines and uncertainty",
+      "filename": "05-real-time-and-deadlines.html",
+      "text_filename": "05-real-time-and-deadlines.txt",
+      "word_count": 1417,
+      "minutes": 8,
+      "source_url": "https://www.cnblogs.com/wackysoft/p/22292586",
+      "base_word_count": 1345
+    },
+    {
+      "id": "S6",
+      "title": "How PLC scans affect the data a C# application observes",
+      "filename": "06-plc-scan-cycles.html",
+      "text_filename": "06-plc-scan-cycles.txt",
+      "word_count": 1359,
+      "minutes": 7,
+      "source_url": "https://www.cnblogs.com/wackysoft/p/22358630",
+      "base_word_count": 1297
+    },
+    {
+      "id": "S7",
+      "title": "Controllers, firmware and the compatibility contract",
+      "filename": "07-controllers-and-firmware.html",
+      "text_filename": "07-controllers-and-firmware.txt",
+      "word_count": 1050,
+      "minutes": 6,
+      "source_url": "https://www.cnblogs.com/wackysoft/p/22405680",
+      "base_word_count": 983
+    },
+    {
+      "id": "S8",
+      "title": "SCADA, MES and ERP as cooperating responsibilities",
+      "filename": "08-scada-mes-and-erp.html",
+      "text_filename": "08-scada-mes-and-erp.txt",
+      "word_count": 1009,
+      "minutes": 6,
+      "source_url": "https://www.cnblogs.com/wackysoft/p/22508181",
+      "base_word_count": 952
+    },
+    {
+      "id": "S9",
+      "title": "Designing the complete industrial software architecture",
+      "filename": "09-complete-system-architecture.html",
+      "text_filename": "09-complete-system-architecture.txt",
+      "word_count": 3538,
+      "minutes": 18,
+      "source_url": "https://www.cnblogs.com/wackysoft/p/22706114",
+      "base_word_count": 3478
+    },
+    {
+      "id": "S10",
+      "title": "Decoding byte order and multi-register numbers correctly",
+      "filename": "10-byte-order-and-numeric-decoding.html",
+      "text_filename": "10-byte-order-and-numeric-decoding.txt",
+      "word_count": 1274,
+      "minutes": 7,
+      "source_url": "https://www.cnblogs.com/wackysoft/p/22760673",
+      "base_word_count": 1214
+    },
+    {
+      "id": "S11",
+      "title": "Boolean values, packed bits and device memory layouts",
+      "filename": "11-booleans-and-packed-bits.html",
+      "text_filename": "11-booleans-and-packed-bits.txt",
+      "word_count": 1011,
+      "minutes": 6,
+      "source_url": "https://www.cnblogs.com/wackysoft/p/22896485",
+      "base_word_count": 953
+    },
+    {
+      "id": "S12",
+      "title": "Reading TCP messages without relying on Sleep",
+      "filename": "12-tcp-framing-without-sleep.html",
+      "text_filename": "12-tcp-framing-without-sleep.txt",
+      "word_count": 1364,
+      "minutes": 7,
+      "source_url": "https://www.cnblogs.com/wackysoft/p/22947367",
+      "base_word_count": 1303
+    }
+  ]
+}

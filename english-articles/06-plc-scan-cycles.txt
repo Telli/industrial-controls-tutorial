@@ -1,0 +1,113 @@
+Article 06 of 12 · Original series
+
+How PLC scans affect the data a C# application observes
+
+Expanded English study edition · About 1,359 words · 7 minute read, plus practice
+
+This is an independently written companion to Wackysoft’s article published 2026-08-10. The brief summary below describes the source; the expanded teaching material is original and is not a full translation.
+
+Read the original source (https://www.cnblogs.com/wackysoft/p/22358630)
+
+Brief English source summary
+
+The scan-cycle article introduces the input–program–output model and relates it to supervisory acquisition. It encourages separating acquisition, storage and screen-refresh schedules, while considering how quickly the underlying process actually changes.
+
+Build a trustworthy acquisition service
+
+The acquisition service is your semantic boundary. Below it are registers, symbols, timeouts and firmware quirks. Above it are named assets, values with units, state observations and documented quality. OpenClaw.NET tools should consume the latter and present it through AgentQi Companion or another supported interface.
+
+Device adapter → decode → validate → timestamp and quality → fan-out
+                                                      ├ latest-value cache
+                                                      ├ historian or durable spool
+                                                      ├ alarm evaluator
+                                                      └ business event publisher
+
+Use one connection owner or explicitly supported serialization per device. A timer callback must not start a second read while the previous one still owns the connection. PeriodicTimer with an awaited loop is a useful ordinary .NET pattern; it is not a real-time scheduler. Maintain bounded queues between independent consumers. A single channel with several readers distributes items among readers; it does not broadcast every item to everyone. Create explicit fan-out if each consumer needs all samples.
+
+.NET’s channels support wait, drop-oldest, drop-newest and drop-write policies. Choose these deliberately: a live chart might keep only recent samples, while an audit event needs a durable path and explicit failure reporting. An in-memory channel alone is not a historian and does not survive a restart. [P9] (https://learn.microsoft.com/en-us/dotnet/core/extensions/channels)
+
+A normalized sample contract
+
+Field | Why it matters
+
+AssetId and TagId | Stable business identity independent of a register address.
+
+Value, Unit, DataType | Meaning and encoding after validation; preserve precision intentionally.
+
+Quality and diagnostic code | Whether the observation is usable and why it may not be.
+
+SourceTimestamp, ReceivedTimestamp | Device time versus acquisition time. If the source has no clock, say so.
+
+Sequence and BootId | Ordering and restart detection within an explicitly defined stream.
+
+MappingVersion and firmware context | Which interpretation produced the value.
+
+Raw-value reference | Evidence for diagnosis without putting unlimited byte dumps into every response.
+
+Worked failure: the last temperature is 54 °C at 10:00:00. Communications fail at 10:00:01. At 10:00:05, return the last value with its original timestamp and bad/stale quality. Do not return 0 °C , and do not attach 10:00:05 as though that were the measurement time. An agent must be able to say, “The latest available sample is five seconds old; I cannot verify the current temperature.”
+
+Use a configurable stale threshold per tag or class of signal. On a reconnect, validate identity and mapping, then acquire a fresh sample before returning to Good. Track poll duration, consecutive failures, reconnect count, queue depth, dropped display samples, spool occupancy and last successful acquisition. Use capped exponential backoff with jitter, but coordinate it with the user-visible freshness requirement.
+
+Design exercise: if acquisition produces 1000 samples/s and storage handles 800/s, the backlog grows by 200/s. A 10,000-sample buffer buys only 50 seconds. A bigger buffer delays failure; it does not fix insufficient sustained throughput.
+
+Follow a signal across one scan
+
+In a simplified controller, inputs are sampled at the start of each 10 ms cycle. The program computes its result and outputs are refreshed at the end. A signal that changes just after the sampling instant may wait nearly 10 ms to enter the next input image, then wait for the relevant computation and output update. The physical response is not necessarily “one scan from the instant the sensor changed.”
+
+This is a teaching model, not a description of every controller. Real devices can have several tasks, different priorities, event-driven work and I/O updates on their own schedule. Use the actual controller documentation to determine which task owns a variable and when the communication service sees it. The task properties described by Beckhoff illustrate why one scan number is insufficient for every path.
+
+A short pulse can disappear between samples
+
+Consider a sensor pulse that begins at 3 ms and ends at 9 ms. A simple input sampler that only observes at 0, 10, 20 and 30 ms sees false every time. Faster polling from a C# application cannot recover an event that never entered the source’s observable state. A hardware capture input, a suitably configured fast task or another appropriate mechanism is needed at the source.
+
+Now suppose the PLC captured the event and set a flag for 20 ms, but the C# service polls every 250 ms. The supervisory service can still miss it. A latched event, an event sequence, a counter or a buffered record gives the slower consumer a durable indication. Each mechanism has different clearing, overflow and restart semantics that must be documented.
+
+Read a count rather than chase every edge
+
+For a simple production count, the controller can maintain a cumulative counter. The supervisory service reads the counter periodically and calculates the difference from the previous observation. This reduces dependence on catching individual pulses. It introduces new questions: what is the counter width, when does it reset, how is a device restart identified, and can it wrap more than once between observations?
+
+For an unsigned 16-bit counter that advances from 65530 to 4, one wrap represents an increase of 10. That arithmetic is only meaningful if the contract rules out a reset and multiple unobserved wraps. Pair the counter with a boot/session identifier or an explicit reset event when necessary. A surprising drop must not be silently interpreted as a huge production increase.
+
+A group of values may not be one snapshot
+
+Suppose you read temperature, batch ID and phase through three independent requests. The batch may change between the first and third request. Every individual value can be valid while their combination never existed on the machine. For a business event or command precondition, that distinction matters.
+
+Ask the controller for a coherent snapshot mechanism. One possible contract publishes a version before and after a data block; readers accept the block only when the versions indicate a stable publication. The exact protocol must be implemented and agreed with the controller programmer. Repeating reads until the numbers look plausible is not a substitute.
+
+Connect scan knowledge to an agent tool
+
+An OpenClaw.NET tool should report the observation’s sequence, time and quality, and whether a returned group is a coherent snapshot. If an industrial analysis tool used by OpenClaw.NET compares events across assets, carry each source’s timing and ordering assumptions into the incident package. The analysis should not treat arrival order as physical event order.
+
+In the supplied simulator, repeated GET requests do not create new samples. The sequence advances when acquisition produces a sample. That small distinction is useful preparation for real PLC integration: the time you asked for data and the time the source produced it are different facts.
+
+Practice and model answer
+
+Exercise: explain both losses in the pulse examples. Then calculate the counter change from 65530 to 4 and state the assumptions needed to use it.
+
+Model answer
+
+The first pulse was missed by source sampling; the second can be missed by supervisory polling after it was captured. Capture or latch at the appropriate layer. The counter change is 10 under a one-wrap, no-reset assumption. Without restart and overflow semantics, the number is not trustworthy enough for a production total.
+
+Hands-on: try it in the lab
+
+Lab 2. Make a 4 ms pulse fall between PLC input samples and see why no client-side poll rate can recover it.
+
+dotnet run --project .\labs\IndustrialLab -- --scan-demo --pulse-ms 4
+
+Step-by-step instructions, the exact expected output and troubleshooting are in the handbook’s guided workbook, Lab 2 . Run commands from the folder that contains the handbook.
+
+References and local resources
+
+Wackysoft’s original article (https://www.cnblogs.com/wackysoft/p/22358630) · published 2026-08-10.
+
+Beckhoff real-time task properties (https://infosys.beckhoff.com/content/1033/te1010_tc3_realtime_monitor/6847560459.html) — Task priorities, cycles and CPU assignment.
+
+OPC UA Part 4 MonitoredItems (https://reference.opcfoundation.org/Core/Part4/v105/docs/5.13.1) — Sampling intervals, filters, queues, revisions and overflow.
+
+Microsoft System.Threading.Channels (https://learn.microsoft.com/en-us/dotnet/core/extensions/channels) — Bounded queues, backpressure and full-buffer policies.
+
+Local comprehensive handbook and interactive exercises .
+
+Local C# lab instructions . The lab is simulated; the earlier build and protocol checks are documented in the verification record .
+
+This edition targets OpenClaw.NET (https://github.com/clawdotnet/openclaw.net) , with AgentQi Companion as its desktop interface. Industrial knowledge, evaluation and command features beyond the simulator are proposed extensions. See the local OpenClaw.NET integration chapter for configuration and version evidence. Examples and limits are educational; new prose examples are not claims of qualified hardware behavior. Relevant explanations from the existing handbook are included so this edition stands on its own.
