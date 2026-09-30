@@ -7,6 +7,8 @@ A free, self-paced course on industrial software for .NET developers. It covers 
 ![Labs](https://img.shields.io/badge/labs-14-0a7d84)
 ![Self-tests](https://img.shields.io/badge/self--tests-85-2e7d32)
 ![Hardware](https://img.shields.io/badge/hardware-not%20required-555)
+[![Code: MIT](https://img.shields.io/badge/code-MIT-blue)](LICENSE)
+[![Content: CC BY 4.0](https://img.shields.io/badge/content-CC%20BY%204.0-lightgrey)](LICENSE-CONTENT.md)
 
 ![The handbook's scan-cycle lab: a 10 ms PLC scan catches all 50 pulses, a 100 ms poller sees only 6 of them, and a PLC counter recovers all 50](docs/images/handbook-scan-lab.png)
 
@@ -114,3 +116,7 @@ The simulator runs on your machine only and never connects to real equipment. Th
 The course follows nine articles in Wackysoft's industrial-controls series on CNBlogs and three follow-up troubleshooting articles, starting with [the first article in the series](https://www.cnblogs.com/wackysoft/p/22144512). The English editions contain short summaries of each source and independently written lessons. They are not translations, and the original articles and images are not included. [`sources.json`](sources.json) lists every source article and technical reference.
 
 This is an independent project and is not affiliated with Wackysoft, CNBlogs or any standards body.
+
+## License
+
+The code in `labs/` is under the [MIT License](LICENSE). The handbook, articles and images are under [CC BY 4.0](LICENSE-CONTENT.md): you can reuse and adapt them, including in your own courses, as long as you credit this repository. The linked source articles belong to their authors and are not covered by either license.
