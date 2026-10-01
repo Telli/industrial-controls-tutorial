@@ -1,0 +1,22 @@
+:root { --ink:#172843; --muted:#627087; --accent:#244779; --paper:#fff; --wash:#f8f9fc; --line:#dbe1eb; --code:#eef1f7; --reader-panel:#eef1f7; color-scheme:light; }
+:root[data-theme='dark'] { --ink:#e7edf8; --muted:#a3b2c8; --accent:#a5c2f0; --paper:#14223a; --wash:#0b1426; --line:#283a56; --code:#101d33; --reader-panel:#1c2e4b; color-scheme:dark; }
+html { scroll-padding-top:100px; }
+.course-site-bar { position:sticky; top:0; z-index:20; display:flex; flex-wrap:wrap; align-items:center; gap:24px; padding:16px max(24px, calc((100vw - 1400px) / 2)); border-bottom:1px solid var(--line); background:var(--paper); font:600 13px/1.5 'Segoe UI',sans-serif; }
+.course-site-bar a { text-decoration:none; color:var(--ink); }
+.course-site-bar a:first-child { margin-right:auto; font-weight:750; }
+.course-site-bar button { border:1px solid var(--line); background:var(--reader-panel); color:var(--ink); border-radius:5px; padding:6px 12px; }
+.sidebar { top:84px; max-height:calc(100vh - 105px); }
+.lead { color:var(--muted); }
+.credit-line { color:var(--muted); font-size:14px; }
+.source-note[id] { padding:14px 18px; background:var(--reader-panel); border-left:3px solid var(--accent); }
+.callout,.source-box,.practice,.exercise,.deep-dive,.calculator,details,blockquote,.actions a,.actions button,.architecture div:not(.arrow),.tag,.foundation { background:var(--reader-panel); color:var(--ink); }
+.lab-card { background:var(--paper); }
+pre, p code, td code, li code { background:var(--code); color:var(--ink); }
+th { background:var(--reader-panel); }
+tr:nth-child(even) td { background:var(--wash); }
+.calculator input,.calculator select,input,select,kbd { background:var(--paper); color:var(--ink); border-color:var(--line); }
+.sidebar nav a:hover,.sidebar a[aria-current=page] { background:var(--reader-panel); }
+:focus-visible { outline:3px solid var(--accent); outline-offset:3px; }
+@media(max-width:600px) { .course-site-bar { gap:12px 18px; padding:12px 18px; font-size:12px; } .course-site-bar a:first-child { flex-basis:calc(100% - 120px); } .course-site-bar button { position:absolute; right:18px; top:9px; } html { scroll-padding-top:110px; } }
+@media(prefers-reduced-motion:reduce) { html { scroll-behavior:auto; } }
+@media print { :root,:root[data-theme='dark'] { --ink:#172843; --muted:#627087; --accent:#244779; --paper:#fff; --wash:#fff; --line:#dbe1eb; --code:#eef1f7; --reader-panel:#eef1f7; color-scheme:light; } .course-site-bar { display:none; } }

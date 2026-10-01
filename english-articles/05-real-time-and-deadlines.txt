@@ -4,13 +4,7 @@ Understanding real time, deadlines and uncertainty
 
 Expanded English study edition · About 1,417 words · 8 minute read, plus practice
 
-This is an independently written companion to Wackysoft’s article published 2026-08-07. The brief summary below describes the source; the expanded teaching material is original and is not a full translation.
-
-Read the original source (https://www.cnblogs.com/wackysoft/p/22292586)
-
-Brief English source summary
-
-The real-time article contrasts interactive software responsiveness with industrial timing requirements. Its central lesson is to reason about deadlines and worst-case behavior, while assigning ordinary .NET supervisory work to the part of the system suited to it.
+Adapted from an article in Wackysoft’s .NET industrial-controls series. The lesson is original English teaching material, not a translation. Source details are listed under References at the end.
 
 Timing, scans and observations
 
@@ -87,7 +81,9 @@ Step-by-step instructions, the exact expected output and troubleshooting are in 
 
 References and local resources
 
-Wackysoft’s original article (https://www.cnblogs.com/wackysoft/p/22292586) · published 2026-08-07.
+About the source article. The real-time article contrasts interactive software responsiveness with industrial timing requirements. Its central lesson is to reason about deadlines and worst-case behavior, while assigning ordinary .NET supervisory work to the part of the system suited to it.
+
+Wackysoft — original article, Chinese, CNBlogs (https://www.cnblogs.com/wackysoft/p/22292586) · published 2026-08-07.
 
 Beckhoff real-time task properties (https://infosys.beckhoff.com/content/1033/te1010_tc3_realtime_monitor/6847560459.html) — Task priorities, cycles and CPU assignment.
 
@@ -97,4 +93,4 @@ Local comprehensive handbook and interactive exercises .
 
 Local C# lab instructions . The lab is simulated; the earlier build and protocol checks are documented in the verification record .
 
-This edition targets OpenClaw.NET (https://github.com/clawdotnet/openclaw.net) , with AgentQi Companion as its desktop interface. Industrial knowledge, evaluation and command features beyond the simulator are proposed extensions. See the local OpenClaw.NET integration chapter for configuration and version evidence. Examples and limits are educational; new prose examples are not claims of qualified hardware behavior. Relevant explanations from the existing handbook are included so this edition stands on its own.
+This edition targets OpenClaw.NET (https://github.com/clawdotnet/openclaw.net) , with AgentQi Companion as its desktop interface. Industrial knowledge, evaluation and command features beyond the simulator are proposed extensions. See the local OpenClaw.NET integration chapter for configuration and version evidence. Examples are for teaching and do not describe the behavior of any particular device.

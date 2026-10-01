@@ -4,13 +4,7 @@ Where C# fits in an industrial control system
 
 Expanded English study edition · About 1,359 words · 7 minute read, plus practice
 
-This is an independently written companion to Wackysoft’s article published 2026-08-02. The brief summary below describes the source; the expanded teaching material is original and is not a full translation.
-
-Read the original source (https://www.cnblogs.com/wackysoft/p/22144512)
-
-Brief English source summary
-
-The opening article presents .NET industrial development as a complete field spanning device communication, data handling and operator interfaces. It introduces the major system layers and suggests learning the ecosystem before concentrating on individual libraries.
+Adapted from an article in Wackysoft’s .NET industrial-controls series. The lesson is original English teaching material, not a translation. Source details are listed under References at the end.
 
 Understand the machine and its layers
 
@@ -84,7 +78,9 @@ Step-by-step instructions, the exact expected output and troubleshooting are in 
 
 References and local resources
 
-Wackysoft’s original article (https://www.cnblogs.com/wackysoft/p/22144512) · published 2026-08-02.
+About the source article. The opening article presents .NET industrial development as a complete field spanning device communication, data handling and operator interfaces. It introduces the major system layers and suggests learning the ecosystem before concentrating on individual libraries.
+
+Wackysoft — original article, Chinese, CNBlogs (https://www.cnblogs.com/wackysoft/p/22144512) · published 2026-08-02.
 
 Beckhoff real-time task properties (https://infosys.beckhoff.com/content/1033/te1010_tc3_realtime_monitor/6847560459.html) — Task priorities, cycles and CPU assignment.
 
@@ -98,7 +94,7 @@ Local comprehensive handbook and interactive exercises .
 
 Local C# lab instructions . The lab is simulated; the earlier build and protocol checks are documented in the verification record .
 
-This edition targets OpenClaw.NET (https://github.com/clawdotnet/openclaw.net) , with AgentQi Companion as its desktop interface. Industrial knowledge, evaluation and command features beyond the simulator are proposed extensions. See the local OpenClaw.NET integration chapter for configuration and version evidence. Examples and limits are educational; new prose examples are not claims of qualified hardware behavior. Relevant explanations from the existing handbook are included so this edition stands on its own.
+This edition targets OpenClaw.NET (https://github.com/clawdotnet/openclaw.net) , with AgentQi Companion as its desktop interface. Industrial knowledge, evaluation and command features beyond the simulator are proposed extensions. See the local OpenClaw.NET integration chapter for configuration and version evidence. Examples are for teaching and do not describe the behavior of any particular device.
 
 
 Article 02 of 12 · Original series
@@ -107,13 +103,7 @@ Choosing Modbus, OPC UA and MQTT for a C# application
 
 Expanded English study edition · About 1,452 words · 8 minute read, plus practice
 
-This is an independently written companion to Wackysoft’s article published 2026-08-04. The brief summary below describes the source; the expanded teaching material is original and is not a full translation.
-
-Read the original source (https://www.cnblogs.com/wackysoft/p/22188247)
-
-Brief English source summary
-
-This article compares Modbus with OPC UA, introduces their different data models and describes simulation as a way to learn without purchasing hardware. It also highlights timeouts, reconnection and representation errors as recurring integration concerns.
+Adapted from an article in Wackysoft’s .NET industrial-controls series. The lesson is original English teaching material, not a translation. Source details are listed under References at the end.
 
 Choose the right connection
 
@@ -200,7 +190,9 @@ Step-by-step instructions, the exact expected output and troubleshooting are in 
 
 References and local resources
 
-Wackysoft’s original article (https://www.cnblogs.com/wackysoft/p/22188247) · published 2026-08-04.
+About the source article. This article compares Modbus with OPC UA, introduces their different data models and describes simulation as a way to learn without purchasing hardware. It also highlights timeouts, reconnection and representation errors as recurring integration concerns.
+
+Wackysoft — original article, Chinese, CNBlogs (https://www.cnblogs.com/wackysoft/p/22188247) · published 2026-08-04.
 
 OPC UA Part 4 MonitoredItems (https://reference.opcfoundation.org/Core/Part4/v105/docs/5.13.1) — Sampling intervals, filters, queues, revisions and overflow.
 
@@ -214,7 +206,7 @@ Local comprehensive handbook and interactive exercises .
 
 Local C# lab instructions . The lab is simulated; the earlier build and protocol checks are documented in the verification record .
 
-This edition targets OpenClaw.NET (https://github.com/clawdotnet/openclaw.net) , with AgentQi Companion as its desktop interface. Industrial knowledge, evaluation and command features beyond the simulator are proposed extensions. See the local OpenClaw.NET integration chapter for configuration and version evidence. Examples and limits are educational; new prose examples are not claims of qualified hardware behavior. Relevant explanations from the existing handbook are included so this edition stands on its own.
+This edition targets OpenClaw.NET (https://github.com/clawdotnet/openclaw.net) , with AgentQi Companion as its desktop interface. Industrial knowledge, evaluation and command features beyond the simulator are proposed extensions. See the local OpenClaw.NET integration chapter for configuration and version evidence. Examples are for teaching and do not describe the behavior of any particular device.
 
 
 Article 03 of 12 · Original series
@@ -223,13 +215,7 @@ Turning industrial observations into reliable records and workflows
 
 Expanded English study edition · About 1,657 words · 9 minute read, plus practice
 
-This is an independently written companion to Wackysoft’s article published 2026-08-05. The brief summary below describes the source; the expanded teaching material is original and is not a full translation.
-
-Read the original source (https://www.cnblogs.com/wackysoft/p/22223863)
-
-Brief English source summary
-
-The data-and-business article distinguishes configuration and business records from time-series measurements. It surveys relational access, time-series storage, state machines and workflow engines, arguing for a clear boundary between persistence, business behavior and presentation.
+Adapted from an article in Wackysoft’s .NET industrial-controls series. The lesson is original English teaching material, not a translation. Source details are listed under References at the end.
 
 Store measurements and business facts
 
@@ -338,7 +324,9 @@ Step-by-step instructions, the exact expected output and troubleshooting are in 
 
 References and local resources
 
-Wackysoft’s original article (https://www.cnblogs.com/wackysoft/p/22223863) · published 2026-08-05.
+About the source article. The data-and-business article distinguishes configuration and business records from time-series measurements. It surveys relational access, time-series storage, state machines and workflow engines, arguing for a clear boundary between persistence, business behavior and presentation.
+
+Wackysoft — original article, Chinese, CNBlogs (https://www.cnblogs.com/wackysoft/p/22223863) · published 2026-08-05.
 
 Microsoft System.Threading.Channels (https://learn.microsoft.com/en-us/dotnet/core/extensions/channels) — Bounded queues, backpressure and full-buffer policies.
 
@@ -352,7 +340,7 @@ Local comprehensive handbook and interactive exercises .
 
 Local C# lab instructions . The lab is simulated; the earlier build and protocol checks are documented in the verification record .
 
-This edition targets OpenClaw.NET (https://github.com/clawdotnet/openclaw.net) , with AgentQi Companion as its desktop interface. Industrial knowledge, evaluation and command features beyond the simulator are proposed extensions. See the local OpenClaw.NET integration chapter for configuration and version evidence. Examples and limits are educational; new prose examples are not claims of qualified hardware behavior. Relevant explanations from the existing handbook are included so this edition stands on its own.
+This edition targets OpenClaw.NET (https://github.com/clawdotnet/openclaw.net) , with AgentQi Companion as its desktop interface. Industrial knowledge, evaluation and command features beyond the simulator are proposed extensions. See the local OpenClaw.NET integration chapter for configuration and version evidence. Examples are for teaching and do not describe the behavior of any particular device.
 
 
 Article 04 of 12 · Original series
@@ -361,13 +349,7 @@ Designing an industrial interface that communicates the truth
 
 Expanded English study edition · About 1,174 words · 6 minute read, plus practice
 
-This is an independently written companion to Wackysoft’s article published 2026-08-06. The brief summary below describes the source; the expanded teaching material is original and is not a full translation.
-
-Read the original source (https://www.cnblogs.com/wackysoft/p/22258497)
-
-Brief English source summary
-
-The interface article compares desktop frameworks and charting tools, then emphasizes clear layouts, restrained visual design and responsive interaction. It places the ViewModel between presentation and application services so device communication does not become screen code.
+Adapted from an article in Wackysoft’s .NET industrial-controls series. The lesson is original English teaching material, not a translation. Source details are listed under References at the end.
 
 Design an interface an operator can trust
 
@@ -447,7 +429,9 @@ Step-by-step instructions, the exact expected output and troubleshooting are in 
 
 References and local resources
 
-Wackysoft’s original article (https://www.cnblogs.com/wackysoft/p/22258497) · published 2026-08-06.
+About the source article. The interface article compares desktop frameworks and charting tools, then emphasizes clear layouts, restrained visual design and responsive interaction. It places the ViewModel between presentation and application services so device communication does not become screen code.
+
+Wackysoft — original article, Chinese, CNBlogs (https://www.cnblogs.com/wackysoft/p/22258497) · published 2026-08-06.
 
 Microsoft Windows Forms .NET 8 (https://learn.microsoft.com/en-us/dotnet/desktop/winforms/whats-new/net80) — Data binding and MVVM capabilities.
 
@@ -457,7 +441,7 @@ Local comprehensive handbook and interactive exercises .
 
 Local C# lab instructions . The lab is simulated; the earlier build and protocol checks are documented in the verification record .
 
-This edition targets OpenClaw.NET (https://github.com/clawdotnet/openclaw.net) , with AgentQi Companion as its desktop interface. Industrial knowledge, evaluation and command features beyond the simulator are proposed extensions. See the local OpenClaw.NET integration chapter for configuration and version evidence. Examples and limits are educational; new prose examples are not claims of qualified hardware behavior. Relevant explanations from the existing handbook are included so this edition stands on its own.
+This edition targets OpenClaw.NET (https://github.com/clawdotnet/openclaw.net) , with AgentQi Companion as its desktop interface. Industrial knowledge, evaluation and command features beyond the simulator are proposed extensions. See the local OpenClaw.NET integration chapter for configuration and version evidence. Examples are for teaching and do not describe the behavior of any particular device.
 
 
 Article 05 of 12 · Original series
@@ -466,13 +450,7 @@ Understanding real time, deadlines and uncertainty
 
 Expanded English study edition · About 1,417 words · 8 minute read, plus practice
 
-This is an independently written companion to Wackysoft’s article published 2026-08-07. The brief summary below describes the source; the expanded teaching material is original and is not a full translation.
-
-Read the original source (https://www.cnblogs.com/wackysoft/p/22292586)
-
-Brief English source summary
-
-The real-time article contrasts interactive software responsiveness with industrial timing requirements. Its central lesson is to reason about deadlines and worst-case behavior, while assigning ordinary .NET supervisory work to the part of the system suited to it.
+Adapted from an article in Wackysoft’s .NET industrial-controls series. The lesson is original English teaching material, not a translation. Source details are listed under References at the end.
 
 Timing, scans and observations
 
@@ -549,7 +527,9 @@ Step-by-step instructions, the exact expected output and troubleshooting are in 
 
 References and local resources
 
-Wackysoft’s original article (https://www.cnblogs.com/wackysoft/p/22292586) · published 2026-08-07.
+About the source article. The real-time article contrasts interactive software responsiveness with industrial timing requirements. Its central lesson is to reason about deadlines and worst-case behavior, while assigning ordinary .NET supervisory work to the part of the system suited to it.
+
+Wackysoft — original article, Chinese, CNBlogs (https://www.cnblogs.com/wackysoft/p/22292586) · published 2026-08-07.
 
 Beckhoff real-time task properties (https://infosys.beckhoff.com/content/1033/te1010_tc3_realtime_monitor/6847560459.html) — Task priorities, cycles and CPU assignment.
 
@@ -559,7 +539,7 @@ Local comprehensive handbook and interactive exercises .
 
 Local C# lab instructions . The lab is simulated; the earlier build and protocol checks are documented in the verification record .
 
-This edition targets OpenClaw.NET (https://github.com/clawdotnet/openclaw.net) , with AgentQi Companion as its desktop interface. Industrial knowledge, evaluation and command features beyond the simulator are proposed extensions. See the local OpenClaw.NET integration chapter for configuration and version evidence. Examples and limits are educational; new prose examples are not claims of qualified hardware behavior. Relevant explanations from the existing handbook are included so this edition stands on its own.
+This edition targets OpenClaw.NET (https://github.com/clawdotnet/openclaw.net) , with AgentQi Companion as its desktop interface. Industrial knowledge, evaluation and command features beyond the simulator are proposed extensions. See the local OpenClaw.NET integration chapter for configuration and version evidence. Examples are for teaching and do not describe the behavior of any particular device.
 
 
 Article 06 of 12 · Original series
@@ -568,13 +548,7 @@ How PLC scans affect the data a C# application observes
 
 Expanded English study edition · About 1,359 words · 7 minute read, plus practice
 
-This is an independently written companion to Wackysoft’s article published 2026-08-10. The brief summary below describes the source; the expanded teaching material is original and is not a full translation.
-
-Read the original source (https://www.cnblogs.com/wackysoft/p/22358630)
-
-Brief English source summary
-
-The scan-cycle article introduces the input–program–output model and relates it to supervisory acquisition. It encourages separating acquisition, storage and screen-refresh schedules, while considering how quickly the underlying process actually changes.
+Adapted from an article in Wackysoft’s .NET industrial-controls series. The lesson is original English teaching material, not a translation. Source details are listed under References at the end.
 
 Build a trustworthy acquisition service
 
@@ -662,7 +636,9 @@ Step-by-step instructions, the exact expected output and troubleshooting are in 
 
 References and local resources
 
-Wackysoft’s original article (https://www.cnblogs.com/wackysoft/p/22358630) · published 2026-08-10.
+About the source article. The scan-cycle article introduces the input–program–output model and relates it to supervisory acquisition. It encourages separating acquisition, storage and screen-refresh schedules, while considering how quickly the underlying process actually changes.
+
+Wackysoft — original article, Chinese, CNBlogs (https://www.cnblogs.com/wackysoft/p/22358630) · published 2026-08-10.
 
 Beckhoff real-time task properties (https://infosys.beckhoff.com/content/1033/te1010_tc3_realtime_monitor/6847560459.html) — Task priorities, cycles and CPU assignment.
 
@@ -674,7 +650,7 @@ Local comprehensive handbook and interactive exercises .
 
 Local C# lab instructions . The lab is simulated; the earlier build and protocol checks are documented in the verification record .
 
-This edition targets OpenClaw.NET (https://github.com/clawdotnet/openclaw.net) , with AgentQi Companion as its desktop interface. Industrial knowledge, evaluation and command features beyond the simulator are proposed extensions. See the local OpenClaw.NET integration chapter for configuration and version evidence. Examples and limits are educational; new prose examples are not claims of qualified hardware behavior. Relevant explanations from the existing handbook are included so this edition stands on its own.
+This edition targets OpenClaw.NET (https://github.com/clawdotnet/openclaw.net) , with AgentQi Companion as its desktop interface. Industrial knowledge, evaluation and command features beyond the simulator are proposed extensions. See the local OpenClaw.NET integration chapter for configuration and version evidence. Examples are for teaching and do not describe the behavior of any particular device.
 
 
 Article 07 of 12 · Original series
@@ -683,13 +659,7 @@ Controllers, firmware and the compatibility contract
 
 Expanded English study edition · About 1,050 words · 6 minute read, plus practice
 
-This is an independently written companion to Wackysoft’s article published 2026-08-12. The brief summary below describes the source; the expanded teaching material is original and is not a full translation.
-
-Read the original source (https://www.cnblogs.com/wackysoft/p/22405680)
-
-Brief English source summary
-
-The controller-and-firmware article explains that a lower-level controller is a system role, not exclusively a PLC. It emphasizes that firmware and device configuration can change communication behavior even when the supervisory application itself has not changed.
+Adapted from an article in Wackysoft’s .NET industrial-controls series. The lesson is original English teaching material, not a translation. Source details are listed under References at the end.
 
 Separate the things called a version
 
@@ -761,7 +731,9 @@ Step-by-step instructions, the exact expected output and troubleshooting are in 
 
 References and local resources
 
-Wackysoft’s original article (https://www.cnblogs.com/wackysoft/p/22405680) · published 2026-08-12.
+About the source article. The controller-and-firmware article explains that a lower-level controller is a system role, not exclusively a PLC. It emphasizes that firmware and device configuration can change communication behavior even when the supervisory application itself has not changed.
+
+Wackysoft — original article, Chinese, CNBlogs (https://www.cnblogs.com/wackysoft/p/22405680) · published 2026-08-12.
 
 OPC Foundation UA .NET Standard (https://github.com/OPCFoundation/UA-.NETStandard) — Reference SDK implementation and samples.
 
@@ -771,7 +743,7 @@ Local comprehensive handbook and interactive exercises .
 
 Local C# lab instructions . The lab is simulated; the earlier build and protocol checks are documented in the verification record .
 
-This edition targets OpenClaw.NET (https://github.com/clawdotnet/openclaw.net) , with AgentQi Companion as its desktop interface. Industrial knowledge, evaluation and command features beyond the simulator are proposed extensions. See the local OpenClaw.NET integration chapter for configuration and version evidence. Examples and limits are educational; new prose examples are not claims of qualified hardware behavior. Relevant explanations from the existing handbook are included so this edition stands on its own.
+This edition targets OpenClaw.NET (https://github.com/clawdotnet/openclaw.net) , with AgentQi Companion as its desktop interface. Industrial knowledge, evaluation and command features beyond the simulator are proposed extensions. See the local OpenClaw.NET integration chapter for configuration and version evidence. Examples are for teaching and do not describe the behavior of any particular device.
 
 
 Article 08 of 12 · Original series
@@ -780,13 +752,7 @@ SCADA, MES and ERP as cooperating responsibilities
 
 Expanded English study edition · About 1,009 words · 6 minute read, plus practice
 
-This is an independently written companion to Wackysoft’s article published 2026-08-17. The brief summary below describes the source; the expanded teaching material is original and is not a full translation.
-
-Read the original source (https://www.cnblogs.com/wackysoft/p/22508181)
-
-Brief English source summary
-
-The SCADA/MES/ERP article distinguishes equipment supervision, manufacturing execution and enterprise planning. It follows information through those responsibilities and explains why high-frequency equipment observations and production-level business facts serve different purposes.
+Adapted from an article in Wackysoft’s .NET industrial-controls series. The lesson is original English teaching material, not a translation. Source details are listed under References at the end.
 
 Follow an order without losing its meaning
 
@@ -858,7 +824,9 @@ Step-by-step instructions, the exact expected output and troubleshooting are in 
 
 References and local resources
 
-Wackysoft’s original article (https://www.cnblogs.com/wackysoft/p/22508181) · published 2026-08-17.
+About the source article. The SCADA/MES/ERP article distinguishes equipment supervision, manufacturing execution and enterprise planning. It follows information through those responsibilities and explains why high-frequency equipment observations and production-level business facts serve different purposes.
+
+Wackysoft — original article, Chinese, CNBlogs (https://www.cnblogs.com/wackysoft/p/22508181) · published 2026-08-17.
 
 Microsoft System.Threading.Channels (https://learn.microsoft.com/en-us/dotnet/core/extensions/channels) — Bounded queues, backpressure and full-buffer policies.
 
@@ -868,7 +836,7 @@ Local comprehensive handbook and interactive exercises .
 
 Local C# lab instructions . The lab is simulated; the earlier build and protocol checks are documented in the verification record .
 
-This edition targets OpenClaw.NET (https://github.com/clawdotnet/openclaw.net) , with AgentQi Companion as its desktop interface. Industrial knowledge, evaluation and command features beyond the simulator are proposed extensions. See the local OpenClaw.NET integration chapter for configuration and version evidence. Examples and limits are educational; new prose examples are not claims of qualified hardware behavior. Relevant explanations from the existing handbook are included so this edition stands on its own.
+This edition targets OpenClaw.NET (https://github.com/clawdotnet/openclaw.net) , with AgentQi Companion as its desktop interface. Industrial knowledge, evaluation and command features beyond the simulator are proposed extensions. See the local OpenClaw.NET integration chapter for configuration and version evidence. Examples are for teaching and do not describe the behavior of any particular device.
 
 
 Article 09 of 12 · Original series
@@ -877,13 +845,7 @@ Designing the complete industrial software architecture
 
 Expanded English study edition · About 3,538 words · 18 minute read, plus practice
 
-This is an independently written companion to Wackysoft’s article published 2026-08-27. The brief summary below describes the source; the expanded teaching material is original and is not a full translation.
-
-Read the original source (https://www.cnblogs.com/wackysoft/p/22706114)
-
-Brief English source summary
-
-The architecture article brings the original series together and identifies acquisition as a central responsibility for the .NET developer. It connects equipment communication, interpretation, storage, business interfaces and presentation, and explicitly concludes the original sequence.
+Adapted from an article in Wackysoft’s .NET industrial-controls series. The lesson is original English teaching material, not a translation. Source details are listed under References at the end.
 
 Build a trustworthy acquisition service
 
@@ -1153,7 +1115,9 @@ Step-by-step instructions, the exact expected output and troubleshooting are in 
 
 References and local resources
 
-Wackysoft’s original article (https://www.cnblogs.com/wackysoft/p/22706114) · published 2026-08-27.
+About the source article. The architecture article brings the original series together and identifies acquisition as a central responsibility for the .NET developer. It connects equipment communication, interpretation, storage, business interfaces and presentation, and explicitly concludes the original sequence.
+
+Wackysoft — original article, Chinese, CNBlogs (https://www.cnblogs.com/wackysoft/p/22706114) · published 2026-08-27.
 
 Microsoft System.Threading.Channels (https://learn.microsoft.com/en-us/dotnet/core/extensions/channels) — Bounded queues, backpressure and full-buffer policies.
 
@@ -1179,7 +1143,7 @@ Local comprehensive handbook and interactive exercises .
 
 Local C# lab instructions . The lab is simulated; the earlier build and protocol checks are documented in the verification record .
 
-This edition targets OpenClaw.NET (https://github.com/clawdotnet/openclaw.net) , with AgentQi Companion as its desktop interface. Industrial knowledge, evaluation and command features beyond the simulator are proposed extensions. See the local OpenClaw.NET integration chapter for configuration and version evidence. Examples and limits are educational; new prose examples are not claims of qualified hardware behavior. Relevant explanations from the existing handbook are included so this edition stands on its own.
+This edition targets OpenClaw.NET (https://github.com/clawdotnet/openclaw.net) , with AgentQi Companion as its desktop interface. Industrial knowledge, evaluation and command features beyond the simulator are proposed extensions. See the local OpenClaw.NET integration chapter for configuration and version evidence. Examples are for teaching and do not describe the behavior of any particular device.
 
 
 Article 10 of 12 · Troubleshooting follow-up
@@ -1188,13 +1152,7 @@ Decoding byte order and multi-register numbers correctly
 
 Expanded English study edition · About 1,274 words · 7 minute read, plus practice
 
-This is an independently written companion to Wackysoft’s article published 2026-08-31. The brief summary below describes the source; the expanded teaching material is original and is not a full translation.
-
-Read the original source (https://www.cnblogs.com/wackysoft/p/22760673)
-
-Brief English source summary
-
-The byte-order follow-up examines why multi-register floating-point values can be decoded incorrectly. It uses four-byte layout names and recommends verifying representation against known device values rather than accepting a number because it looks plausible.
+Adapted from an article in Wackysoft’s .NET industrial-controls series. The lesson is original English teaching material, not a translation. Source details are listed under References at the end.
 
 Decode numbers and bits correctly
 
@@ -1274,7 +1232,9 @@ Step-by-step instructions, the exact expected output and troubleshooting are in 
 
 References and local resources
 
-Wackysoft’s original article (https://www.cnblogs.com/wackysoft/p/22760673) · published 2026-08-31.
+About the source article. The byte-order follow-up examines why multi-register floating-point values can be decoded incorrectly. It uses four-byte layout names and recommends verifying representation against known device values rather than accepting a number because it looks plausible.
+
+Wackysoft — original article, Chinese, CNBlogs (https://www.cnblogs.com/wackysoft/p/22760673) · published 2026-08-31.
 
 NModbus project (https://github.com/NModbus/NModbus) — Package lineage, protocol support and project API entry point.
 
@@ -1286,7 +1246,7 @@ Local comprehensive handbook and interactive exercises .
 
 Local C# lab instructions . The lab is simulated; the earlier build and protocol checks are documented in the verification record .
 
-This edition targets OpenClaw.NET (https://github.com/clawdotnet/openclaw.net) , with AgentQi Companion as its desktop interface. Industrial knowledge, evaluation and command features beyond the simulator are proposed extensions. See the local OpenClaw.NET integration chapter for configuration and version evidence. Examples and limits are educational; new prose examples are not claims of qualified hardware behavior. Relevant explanations from the existing handbook are included so this edition stands on its own.
+This edition targets OpenClaw.NET (https://github.com/clawdotnet/openclaw.net) , with AgentQi Companion as its desktop interface. Industrial knowledge, evaluation and command features beyond the simulator are proposed extensions. See the local OpenClaw.NET integration chapter for configuration and version evidence. Examples are for teaching and do not describe the behavior of any particular device.
 
 
 Article 11 of 12 · Troubleshooting follow-up
@@ -1295,13 +1255,7 @@ Boolean values, packed bits and device memory layouts
 
 Expanded English study edition · About 1,011 words · 6 minute read, plus practice
 
-This is an independently written companion to Wackysoft’s article published 2026-09-09. The brief summary below describes the source; the expanded teaching material is original and is not a full translation.
-
-Read the original source (https://www.cnblogs.com/wackysoft/p/22896485)
-
-Brief English source summary
-
-The BOOL/BIT follow-up distinguishes a logical Boolean from a packed bit field and illustrates masking individual flags. The useful lesson is to verify the representation at the interface; storage rules should not be generalized from one runtime or device.
+Adapted from an article in Wackysoft’s .NET industrial-controls series. The lesson is original English teaching material, not a translation. Source details are listed under References at the end.
 
 Ask four different questions
 
@@ -1369,7 +1323,9 @@ Step-by-step instructions, the exact expected output and troubleshooting are in 
 
 References and local resources
 
-Wackysoft’s original article (https://www.cnblogs.com/wackysoft/p/22896485) · published 2026-09-09.
+About the source article. The BOOL/BIT follow-up distinguishes a logical Boolean from a packed bit field and illustrates masking individual flags. The useful lesson is to verify the representation at the interface; storage rules should not be generalized from one runtime or device.
+
+Wackysoft — original article, Chinese, CNBlogs (https://www.cnblogs.com/wackysoft/p/22896485) · published 2026-09-09.
 
 Beckhoff variable addresses (https://infosys.beckhoff.com/content/1033/tc3_plc_intro/2529360523.html) — Single-bit addresses and byte allocation for Boolean variables.
 
@@ -1379,7 +1335,7 @@ Local comprehensive handbook and interactive exercises .
 
 Local C# lab instructions . The lab is simulated; the earlier build and protocol checks are documented in the verification record .
 
-This edition targets OpenClaw.NET (https://github.com/clawdotnet/openclaw.net) , with AgentQi Companion as its desktop interface. Industrial knowledge, evaluation and command features beyond the simulator are proposed extensions. See the local OpenClaw.NET integration chapter for configuration and version evidence. Examples and limits are educational; new prose examples are not claims of qualified hardware behavior. Relevant explanations from the existing handbook are included so this edition stands on its own.
+This edition targets OpenClaw.NET (https://github.com/clawdotnet/openclaw.net) , with AgentQi Companion as its desktop interface. Industrial knowledge, evaluation and command features beyond the simulator are proposed extensions. See the local OpenClaw.NET integration chapter for configuration and version evidence. Examples are for teaching and do not describe the behavior of any particular device.
 
 
 Article 12 of 12 · Troubleshooting follow-up
@@ -1388,13 +1344,7 @@ Reading TCP messages without relying on Sleep
 
 Expanded English study edition · About 1,364 words · 7 minute read, plus practice
 
-This is an independently written companion to Wackysoft’s article published 2026-09-14. The brief summary below describes the source; the expanded teaching material is original and is not a full translation.
-
-Read the original source (https://www.cnblogs.com/wackysoft/p/22947367)
-
-Brief English source summary
-
-The final follow-up investigates why delaying a read can appear to fix missing data. It distinguishes old source values from incomplete TCP reads and introduces buffering as part of assembling complete messages from a byte stream.
+Adapted from an article in Wackysoft’s .NET industrial-controls series. The lesson is original English teaching material, not a translation. Source details are listed under References at the end.
 
 Read streams without timing guesses
 
@@ -1472,7 +1422,9 @@ Step-by-step instructions, the exact expected output and troubleshooting are in 
 
 References and local resources
 
-Wackysoft’s original article (https://www.cnblogs.com/wackysoft/p/22947367) · published 2026-09-14.
+About the source article. The final follow-up investigates why delaying a read can appear to fix missing data. It distinguishes old source values from incomplete TCP reads and introduces buffering as part of assembling complete messages from a byte stream.
+
+Wackysoft — original article, Chinese, CNBlogs (https://www.cnblogs.com/wackysoft/p/22947367) · published 2026-09-14.
 
 Microsoft NetworkStream ReadAsync (https://learn.microsoft.com/en-us/dotnet/api/system.net.sockets.networkstream.readasync?view=net-10.0) — Partial reads, cancellation and peer shutdown.
 
@@ -1482,4 +1434,4 @@ Local comprehensive handbook and interactive exercises .
 
 Local C# lab instructions . The lab is simulated; the earlier build and protocol checks are documented in the verification record .
 
-This edition targets OpenClaw.NET (https://github.com/clawdotnet/openclaw.net) , with AgentQi Companion as its desktop interface. Industrial knowledge, evaluation and command features beyond the simulator are proposed extensions. See the local OpenClaw.NET integration chapter for configuration and version evidence. Examples and limits are educational; new prose examples are not claims of qualified hardware behavior. Relevant explanations from the existing handbook are included so this edition stands on its own.
+This edition targets OpenClaw.NET (https://github.com/clawdotnet/openclaw.net) , with AgentQi Companion as its desktop interface. Industrial knowledge, evaluation and command features beyond the simulator are proposed extensions. See the local OpenClaw.NET integration chapter for configuration and version evidence. Examples are for teaching and do not describe the behavior of any particular device.

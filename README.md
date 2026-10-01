@@ -1,17 +1,23 @@
 # Industrial controls with C#, OpenClaw.NET and AgentQi Companion
 
-A standalone English course on industrial controls, with a local article library and runnable C# study labs. Learn how device signals become useful observations, how supervisory applications handle failures, and how an agent can work with bounded industrial tools.
+A standalone English course on industrial controls, with a local article library, runnable C# study labs and an interactive website. Learn how device signals become useful observations, how supervisory applications handle failures, and how an agent can work with bounded industrial tools.
+
+The course builds on Wackysoft's .NET industrial-controls article series; see [Sources and attribution](#sources-and-attribution).
 
 ## Read offline
 
 Download this repository using **Code → Download ZIP**, extract it, then open either of these files in your browser:
 
 - [`english-articles/index.html`](english-articles/index.html): searchable library of 12 English study editions, with individual HTML and plain-text copies.
-- [`Industrial-Controls-Tutorial.html`](Industrial-Controls-Tutorial.html): the comprehensive handbook, including 17 chapters, 14 guided labs, worked examples, answers, an eight-week study plan and five appendices.
+- [`Industrial-Controls-Tutorial.html`](Industrial-Controls-Tutorial.html): the comprehensive handbook, including 17 chapters, 14 guided labs, worked examples, answers, an eight-week study plan and six appendices.
 
 For one continuous document, open [`english-articles/all-articles.html`](english-articles/all-articles.html) or read the [combined plain-text edition](english-articles/all-articles.txt). A ready-to-extract [study pack](Industrial-Controls-Expanded-English-Pack.zip) is also included.
 
-All lesson text is local. CNBlogs and other external links provide attribution and optional further reading; users do not need to visit them to follow the English course. GitHub displays HTML source, so download the files to read the formatted pages.
+All lesson text is local. External links are references and optional further reading; you don't need them to follow the course. GitHub displays HTML source, so download the files to read the formatted pages.
+
+## Interactive labs
+
+[`web/`](web/) is a React site with 13 browser labs (scan cycles, byte order, framing, alarms, ladder logic, analog scaling and more) plus the tutorials. See [`web/README.md`](web/README.md) to run or build it.
 
 ## What is included
 
@@ -46,8 +52,8 @@ The simulator runs locally and has no connection to physical equipment. Its MCP 
 
 ## Sources and attribution
 
-The reading map covers nine articles in Wackysoft's original industrial-controls series and three subsequent troubleshooting articles, starting with [the CNBlogs series entry](https://www.cnblogs.com/wackysoft/p/22144512).
+The course builds on nine articles in Wackysoft's Chinese-language .NET industrial-controls series and three later troubleshooting articles by the same author, starting with [the series entry on CNBlogs](https://www.cnblogs.com/wackysoft/p/22144512). Thanks to the author for a practical, well-structured series.
 
-The English editions contain brief source summaries and independently written expanded lessons. They are **not full translations** of the original articles. [`sources.json`](sources.json) identifies every source article and the primary technical references. Original articles and source images are not redistributed in this repository.
+The English editions are independently written lessons. They are **not translations** of the original articles. Each lesson credits its source article, with a short summary, in its References section; the handbook lists all twelve in Appendix F. [`sources.json`](sources.json) identifies every source article and the primary technical references. Original articles and source images are not redistributed in this repository.
 
 OpenClaw.NET-specific guidance was checked against commit `603b567646423a8090a16836aa155f9b011aaa00` on 29 September 2026. The proposed industrial product features are distinguished from existing runtime capabilities. This is an independent study resource.

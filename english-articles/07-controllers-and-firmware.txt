@@ -4,13 +4,7 @@ Controllers, firmware and the compatibility contract
 
 Expanded English study edition · About 1,050 words · 6 minute read, plus practice
 
-This is an independently written companion to Wackysoft’s article published 2026-08-12. The brief summary below describes the source; the expanded teaching material is original and is not a full translation.
-
-Read the original source (https://www.cnblogs.com/wackysoft/p/22405680)
-
-Brief English source summary
-
-The controller-and-firmware article explains that a lower-level controller is a system role, not exclusively a PLC. It emphasizes that firmware and device configuration can change communication behavior even when the supervisory application itself has not changed.
+Adapted from an article in Wackysoft’s .NET industrial-controls series. The lesson is original English teaching material, not a translation. Source details are listed under References at the end.
 
 Separate the things called a version
 
@@ -82,7 +76,9 @@ Step-by-step instructions, the exact expected output and troubleshooting are in 
 
 References and local resources
 
-Wackysoft’s original article (https://www.cnblogs.com/wackysoft/p/22405680) · published 2026-08-12.
+About the source article. The controller-and-firmware article explains that a lower-level controller is a system role, not exclusively a PLC. It emphasizes that firmware and device configuration can change communication behavior even when the supervisory application itself has not changed.
+
+Wackysoft — original article, Chinese, CNBlogs (https://www.cnblogs.com/wackysoft/p/22405680) · published 2026-08-12.
 
 OPC Foundation UA .NET Standard (https://github.com/OPCFoundation/UA-.NETStandard) — Reference SDK implementation and samples.
 
@@ -92,4 +88,4 @@ Local comprehensive handbook and interactive exercises .
 
 Local C# lab instructions . The lab is simulated; the earlier build and protocol checks are documented in the verification record .
 
-This edition targets OpenClaw.NET (https://github.com/clawdotnet/openclaw.net) , with AgentQi Companion as its desktop interface. Industrial knowledge, evaluation and command features beyond the simulator are proposed extensions. See the local OpenClaw.NET integration chapter for configuration and version evidence. Examples and limits are educational; new prose examples are not claims of qualified hardware behavior. Relevant explanations from the existing handbook are included so this edition stands on its own.
+This edition targets OpenClaw.NET (https://github.com/clawdotnet/openclaw.net) , with AgentQi Companion as its desktop interface. Industrial knowledge, evaluation and command features beyond the simulator are proposed extensions. See the local OpenClaw.NET integration chapter for configuration and version evidence. Examples are for teaching and do not describe the behavior of any particular device.

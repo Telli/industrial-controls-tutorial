@@ -1,7 +1,7 @@
 INDUSTRIAL CONTROLS WITH C#, OPENCLAW.NET AND AGENTQI COMPANION
 
 Open Industrial-Controls-Tutorial.html in a browser.
-It is a self-contained handbook with the complete reading map, 17 chapters,
+It is a self-contained handbook with a course map, 17 chapters,
 worked examples, interactive timing/byte-order exercises, 14 labs, answers,
 an eight-week study plan and the tested C# decoder.
 
@@ -9,9 +9,10 @@ SECOND EDITION (guided labs): chapters 3-10 each end with a deep dive, and
 Appendix C is a step-by-step workbook for all 14 labs with verified expected
 output and troubleshooting. Appendix D is the lab tank's Modbus device contract.
 Appendix E is an annotated further-reading list mapped to chapters and labs.
+Appendix F credits the source articles.
 
-All nine original articles and three subsequent troubleshooting articles from
-Wackysoft are linked and mapped to lessons. Sources were checked 2026-09-29.
+The course builds on Wackysoft's .NET industrial-controls series (nine
+articles plus three follow-ups). Sources were checked 2026-09-29.
 The integration target is https://github.com/clawdotnet/openclaw.net.
 OpenClaw.NET is the .NET runtime/gateway; AgentQi Companion is its Avalonia
 desktop app. Chapter 12 proposes industrial features to add to that platform.
