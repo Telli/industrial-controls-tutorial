@@ -1,59 +1,129 @@
-# Industrial controls with C#, OpenClaw.NET and AgentQi Companion
+# Industrial Controls Tutorial for C# Developers
 
-A standalone English course on industrial controls, with a local article library, runnable C# study labs and an interactive website. Learn how device signals become useful observations, how supervisory applications handle failures, and how an agent can work with bounded industrial tools.
+A free, self-paced course on industrial software for .NET developers. It covers PLC scan cycles, Modbus TCP, OPC UA, MQTT, SCADA, alarms and historians, with 14 hands-on labs you run on your own machine. No PLC or other hardware is needed: a simulated tank and Modbus device stand in for the plant.
 
-The course builds on Wackysoft's .NET industrial-controls article series; see [Sources and attribution](#sources-and-attribution).
+![.NET 10](https://img.shields.io/badge/.NET-10-512BD4?logo=dotnet)
+![C#](https://img.shields.io/badge/C%23-labs-239120)
+![Labs](https://img.shields.io/badge/labs-14-0a7d84)
+![Self-tests](https://img.shields.io/badge/self--tests-85-2e7d32)
+![Hardware](https://img.shields.io/badge/hardware-not%20required-555)
+[![Code: MIT](https://img.shields.io/badge/code-MIT-blue)](LICENSE)
+[![Content: CC BY 4.0](https://img.shields.io/badge/content-CC%20BY%204.0-lightgrey)](LICENSE-CONTENT.md)
 
-## Read offline
+![The handbook's scan-cycle lab: a 10 ms PLC scan catches all 50 pulses, a 100 ms poller sees only 6 of them, and a PLC counter recovers all 50](docs/images/handbook-scan-lab.png)
 
-Download this repository using **Code → Download ZIP**, extract it, then open either of these files in your browser:
+## Interactive website
 
-- [`english-articles/index.html`](english-articles/index.html): searchable library of 12 English study editions, with individual HTML and plain-text copies.
-- [`Industrial-Controls-Tutorial.html`](Industrial-Controls-Tutorial.html): the comprehensive handbook, including 17 chapters, 14 guided labs, worked examples, answers, an eight-week study plan and six appendices.
+Open [Industrial Controls Lab](https://ic.agentqi.dev/) for 13 interactive browser labs and the [complete written course](https://ic.agentqi.dev/#/tutorials). The site includes light and dark themes and optional usage analytics. See [`web/README.md`](web/README.md) to run or build it locally.
 
-For one continuous document, open [`english-articles/all-articles.html`](english-articles/all-articles.html) or read the [combined plain-text edition](english-articles/all-articles.txt). A ready-to-extract [study pack](Industrial-Controls-Expanded-English-Pack.zip) is also included.
+## Who it's for
 
-All lesson text is local. External links are references and optional further reading; you don't need them to follow the course. GitHub displays HTML source, so download the files to read the formatted pages.
+C# developers who are new to operational technology (OT) and want to build software that reads from PLCs, feeds dashboards and historians, or connects plant data to AI agents. You should be comfortable with basic C#. Everything about the plant side is explained from scratch.
 
-## Interactive labs
+## What you'll learn
 
-[`web/`](web/) is a React site with 13 browser labs (scan cycles, byte order, framing, alarms, ladder logic, analog scaling and more) plus the tutorials. See [`web/README.md`](web/README.md) to run or build it.
+| Topic | What you build or measure |
+| --- | --- |
+| PLC scan cycles and timing | Run a scan simulator and watch a 100 ms poll miss 44 of 50 pulses that the PLC caught |
+| Modbus TCP | Poll a simulated device over a real socket, decode its register map, handle exception codes |
+| Byte order and data types | Decode float32 in four word orders, uint32, scaled int16 and packed status bits |
+| TCP framing | Parse responses correctly when the network splits them into single bytes |
+| Data quality | Detect stale data, dropped links and a device that answers with frozen values |
+| Alarms (ISA-18.2 style) | Build an alarm with hysteresis and acknowledgement that never clears on bad data |
+| Historians | Store samples in SQLite, find gaps and see a one-minute average hide a 6 °C spike |
+| MES integration | Deliver a batch event once in effect across a lost reply and a restart |
+| Operator screens (ISA-101 style) | Build a dashboard that stays truthful when the link drops |
+| AI agents | Expose the simulator as MCP tools for [OpenClaw.NET](https://github.com/clawdotnet/openclaw.net) and score the agent's answers |
 
-## What is included
+OPC UA and MQTT are covered in the reading material as architecture choices; the labs use Modbus TCP because it is the simplest protocol to see on the wire.
 
-- Industrial software boundaries, PLC scans, timing and data quality.
-- Modbus TCP, OPC UA and MQTT concepts; byte order, packed bits and TCP framing.
-- Acquisition, storage, alarms, operator interfaces and recoverable workflows.
-- A simulated tank, Modbus device and poller, scan simulation, alarm and outbox exercises, a console dashboard and historian SQL exercises.
-- C# MCP tools and configuration guidance for [OpenClaw.NET](https://github.com/clawdotnet/openclaw.net), with AgentQi Companion as the desktop interface.
+## Quick start
 
-## Run the labs
-
-Reading requires only a browser. The C# labs require the **.NET 10 SDK** and access to NuGet for the first restore. The Python checks use the Python 3 standard library.
-
-From the repository folder:
+Reading needs only a browser. The labs need the [.NET 10 SDK](https://dotnet.microsoft.com/download) and internet access for the first NuGet restore. The optional checker scripts need Python 3.
 
 ```powershell
+git clone https://github.com/Telli/industrial-controls-tutorial
+cd industrial-controls-tutorial
+
+# 85 automated checks; ends with "All 85 checks passed."
 dotnet run --project ./labs/IndustrialLab -- --self-test
+
+# Start the simulator with its Modbus TCP device
 dotnet run --project ./labs/IndustrialLab -- --modbus
 ```
 
-The self-test should finish with `All 85 checks passed.` The second command keeps the simulator running, with HTTP at `http://localhost:5088`, MCP at `/mcp`, and the simulated Modbus TCP device at `127.0.0.1:5502`. Stop it with Ctrl+C.
-
-In another terminal, try the poller:
+The simulator serves HTTP on `http://localhost:5088`, MCP tools on `/mcp` and a Modbus TCP device on `127.0.0.1:5502`. In a second terminal, poll the device:
 
 ```powershell
-dotnet run --project ./labs/IndustrialLab -- --poll --count 10
+dotnet run --project ./labs/IndustrialLab -- --poll --count 5
 ```
 
-Follow [`START-HERE.txt`](START-HERE.txt) and Appendix C of the handbook for the complete lab sequence. [`VERIFICATION.txt`](VERIFICATION.txt) records the checks performed and their limits.
+Each line is one Modbus request. These excerpts come from the Lab 14 drills, where the device first answers normally, then keeps answering with frozen values, then goes silent:
 
-The simulator runs locally and has no connection to physical equipment. Its MCP proposals never execute a setpoint change. The OpenClaw.NET configuration example is a fragment to merge into a separately configured gateway; the complete gateway and Companion integration has not been tested here.
+```text
+time         tid   quality           temp(f32)  temp(x10)  setpoint  state    hb     seq      rtt  detail
+16:52:45.664     2 Good                 36.923       36.9      60.0  Heating     26       26     4ms OK
+16:52:50.264     4 Stale                40.790       40.8      60.0  Heating     37       37     3ms Heartbeat 37 unchanged for 3 polls
+16:52:52.415     1 BadCommunication          -          -         -  -            -        -   511ms No complete response within 500 ms
+```
+
+The frozen device still replies in 3 ms, so only the heartbeat register reveals the problem. The silent device produces no error at all, so only the deadline does.
+
+## Read the course
+
+The course is two sets of HTML pages. GitHub shows HTML as source code, so clone or download the repository (**Code → Download ZIP**) and open the files in a browser.
+
+- **[Handbook](Industrial-Controls-Tutorial.html)**: 17 chapters, a guided workbook for all 14 labs with expected output and troubleshooting, an eight-week study plan, a device register map and an annotated reading list, and six appendices including source credits.
+- **[Article library](english-articles/index.html)**: 12 shorter study articles, each with a hands-on section. Also available as [one page](english-articles/all-articles.html) and as [plain text](english-articles/all-articles.txt).
+
+## The labs
+
+| # | Lab | Type |
+| --- | --- | --- |
+| 1 | Responsibility map: who owns safety, control, supervision and advice | Design |
+| 2 | Timing and scans: missed pulses and the counter fix | Simulation |
+| 3 | Device contract: write a register map two people decode the same way | Design |
+| 4 | Decoder: test fixtures and a deliberate bug the tests must catch | Code |
+| 5 | TCP fragmentation over a real socket | Code + live |
+| 6 | Stale data: prove old values are never presented as new | Live |
+| 7 | Historian in SQLite, with a C# writer template | SQL + C# |
+| 8 | Alarm lifecycle: hysteresis, acknowledgement, bad quality | Code + live |
+| 9 | Operator dashboard, from a console starter | Build |
+| 10 | MES outbox and idempotent delivery | Code |
+| 11 | Connect the tools to an AI agent and score its answers | Integration |
+| 12 | Firmware and register-map upgrades without wrong data | Design + live |
+| 13 | Modbus TCP end to end | Live |
+| 14 | Communication failure drills | Live |
+
+Start with [`START-HERE.txt`](START-HERE.txt), then follow Appendix C of the handbook.
+
+## Repository layout
+
+```text
+Industrial-Controls-Tutorial.html   the handbook
+english-articles/                   12 study articles (HTML and plain text)
+labs/IndustrialLab/                 C# simulator, Modbus device and poller, labs, self-tests
+labs/DashboardStarter/              console dashboard starter (Lab 9)
+labs/historian/                     SQLite schema, queries and checker (Lab 7)
+labs/verify-labs.py                 live checks against the running simulator
+labs/openclaw-mcp.example.json      MCP client configuration fragment for OpenClaw.NET
+web/                               React website, interactive labs and tutorial publishing
+sources.json                        source articles and technical references
+VERIFICATION.txt                    what was tested, and what was not
+```
+
+## Safety and scope
+
+The simulator runs on your machine only and never connects to real equipment. The Modbus device listens on the loopback address and refuses every write. The agent tools can propose a setpoint change but never execute one. This is a study resource. It does not replace the safety engineering, testing and review that real plant software requires.
 
 ## Sources and attribution
 
-The course builds on nine articles in Wackysoft's Chinese-language .NET industrial-controls series and three later troubleshooting articles by the same author, starting with [the series entry on CNBlogs](https://www.cnblogs.com/wackysoft/p/22144512). Thanks to the author for a practical, well-structured series.
+The course builds on nine articles in Wackysoft's Chinese-language .NET industrial-controls series and three later troubleshooting articles, starting with [the series entry on CNBlogs](https://www.cnblogs.com/wackysoft/p/22144512). Thanks to the author for a practical, well-structured series.
 
-The English editions are independently written lessons. They are **not translations** of the original articles. Each lesson credits its source article, with a short summary, in its References section; the handbook lists all twelve in Appendix F. [`sources.json`](sources.json) identifies every source article and the primary technical references. Original articles and source images are not redistributed in this repository.
+The English editions are independently written lessons, not translations. Each lesson credits its source article, with a short summary, in its References section; the handbook lists all twelve in Appendix F. [`sources.json`](sources.json) identifies every source article and technical reference. Original articles and source images are not redistributed.
 
-OpenClaw.NET-specific guidance was checked against commit `603b567646423a8090a16836aa155f9b011aaa00` on 29 September 2026. The proposed industrial product features are distinguished from existing runtime capabilities. This is an independent study resource.
+This is an independent project and is not affiliated with Wackysoft, CNBlogs or any standards body.
+
+## License
+
+The code in `labs/` is under the [MIT License](LICENSE). The handbook, articles and images are under [CC BY 4.0](LICENSE-CONTENT.md): you can reuse and adapt them, including in your own courses, as long as you credit this repository. The linked source articles belong to their authors and are not covered by either license.
