@@ -13,7 +13,7 @@ You may share and adapt it for any purpose, including commercially, if you give
 credit, link to the license and indicate whether you made changes. A suitable
 credit line is:
 
-> Industrial Controls Tutorial for C# Developers by Ibrahim Telli Koroma,
+> Industrial Controls Tutorial for C# Developers by Telli Koroma,
 > https://github.com/Telli/industrial-controls-tutorial, licensed under CC BY 4.0.
 
 Source code (everything in `labs/` and any other code in this repository) is
