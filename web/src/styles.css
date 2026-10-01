@@ -503,3 +503,52 @@ details.check .check-a { margin: 0; color: var(--muted); }
 .credits li span { color: var(--muted); }
 .credit-note { font-size: .9rem; color: var(--muted); max-width: 75ch; }
 .credits ol.source-list { list-style: none; padding-left: 0; }
+
+/* ---------- lab 14: safety systems ---------- */
+.safety-grid { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 16px; align-items: start; }
+.protection-layers { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; counter-reset: layer; }
+.protection-layers li { counter-increment: layer; display: grid; gap: 6px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 9px; background: var(--bg); }
+.protection-layers li > div { display: grid; }
+.protection-layers li b::before { content: counter(layer) '. '; color: var(--muted); font-weight: 500; }
+.protection-layers .badge { justify-self: start; }
+@media (max-width: 900px) { .safety-grid { grid-template-columns: 1fr; } }
+
+/* ---------- lab 15: HMI design. The HMI is its own screen, independent of the site theme. ---------- */
+.principles { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px 20px; }
+.hmi-screen { border-radius: 10px; padding: 14px; border: 1px solid var(--line); }
+.hmi-screen.legacy { background: #000; }
+.hmi-screen.hp { background: #dfe2e6; }
+.hmi-mimic { display: block; width: 100%; height: auto; margin-bottom: 12px; }
+.hmi-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.hmi-tile { display: grid; gap: 6px; align-content: start; text-align: left; padding: 10px 12px; border-radius: 6px; min-height: 92px; font-family: var(--sans); cursor: pointer; }
+.hmi-tile:disabled { cursor: default; }
+.hmi-tile.legacy { background: #101010; border: 1px solid #3a3a3a; color: #fff; }
+.hmi-tile.hp { background: #eceef0; border: 1px solid #b9bfc6; color: #2b3038; }
+.hmi-tile.hp.in-alarm { border: 2px solid #c0182b; background: #fff; }
+.hmi-tile.stale { background-image: repeating-linear-gradient(135deg, transparent 0 8px, rgba(120, 120, 120, .18) 8px 10px); }
+.hmi-tile:not(:disabled):hover { outline: 2px solid var(--accent); outline-offset: 1px; }
+.hmi-tile-head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; min-height: 22px; }
+.hmi-label { font-size: 13px; font-weight: 600; }
+.hmi-priority { display: inline-flex; align-items: center; gap: 4px; font: 700 11px var(--mono); color: #c0182b; }
+.hmi-stale { font: 700 11px var(--mono); color: #4a4f57; background: #fff; border: 1px dashed #4a4f57; padding: 0 5px; border-radius: 4px; }
+.hmi-value { font: 600 20px var(--mono); }
+.hmi-tile.stale .hmi-value { color: #7a8089; }
+.hmi-bar { position: relative; height: 10px; background: #c9ced4; border-radius: 2px; }
+.hmi-band { position: absolute; top: 0; bottom: 0; background: #f5f6f7; }
+.hmi-limit { position: absolute; top: -3px; bottom: -3px; width: 2px; background: #c0182b; }
+.hmi-pointer { position: absolute; top: -4px; width: 0; height: 0; margin-left: -6px; border-left: 6px solid transparent; border-right: 6px solid transparent; border-top: 9px solid #2b3038; }
+.hmi-pointer.out { border-top-color: #d98200; }
+.hmi-trend { width: 100%; height: 24px; color: #4a4f57; }
+.hmi-tile.legacy .hmi-trend { color: #5ee0ff; }
+.hmi-tile.legacy .hmi-bar { background: #333; }
+.hmi-tile.legacy .hmi-band { background: #555; }
+@media (max-width: 700px) { .hmi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.citations ul { list-style: none; padding: 0; margin: 0 0 10px; display: grid; gap: 12px; }
+.citations li { display: grid; gap: 3px; margin: 0; }
+.citations li .badge { justify-self: start; }
+.citations li > a { font-weight: 600; }
+.hmi-deviation { font: 700 11px var(--mono); color: #8a5300; }
+.principle { display: grid; gap: 2px; }
+.principle-ref { font: 12px var(--mono); color: var(--accent); }
+.principle-why { font-size: 13px; color: var(--muted); line-height: 1.5; }
+.citations li .lesson-hint, .protection-layers .lesson-hint { margin: 0; line-height: 1.5; }

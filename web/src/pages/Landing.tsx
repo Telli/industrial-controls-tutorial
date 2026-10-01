@@ -91,6 +91,6 @@ export default function Landing() {
 
     <section className="wrap"><div className="start-banner"><div><div className="eyebrow">WHERE TO START</div><h2>Lab 01: why a value you read may already be out of date</h2><p>Follow a 15 ms pulse through a PLC scan and a 100 ms poll, and see which events survive.</p></div><Link className="btn" to="/labs/scan-cycle">Open lab 01 <Icon name="arrow" size={18} /></Link></div></section>
 
-    <section className="wrap credits" aria-labelledby="credits-title"><h2 id="credits-title">Credits</h2><p>The written course builds on Wackysoft’s .NET industrial-controls article series, and the PLC-foundation labs draw on Frank D. Petruzella’s <i>Programmable Logic Controllers</i>. All lessons, labs and simulations are original. <Link to="/tutorials" state={{ scrollTo: 'references' }}>Full sources and references</Link>.</p></section>
+    <section className="wrap credits" aria-labelledby="credits-title"><h2 id="credits-title">Credits</h2><p>The written course builds on Wackysoft’s .NET industrial-controls article series. The labs draw on Frank D. Petruzella’s <i>Programmable Logic Controllers</i>, Tony R. Kuphaldt’s openly licensed <i>Lessons in Industrial Instrumentation</i>, and free primary sources including the Modbus specifications, NIST SP 800-82, NUREG-0700 and public incident investigations. All lessons, labs and simulations are original. <Link to="/tutorials" state={{ scrollTo: 'references' }}>Full sources and references</Link>.</p></section>
   </>
 }

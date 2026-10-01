@@ -2,7 +2,8 @@ import { Suspense } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { LABS, labById } from '../labs/registry'
 import { LAB_CONTENT } from '../labs/content'
-import { HANDBOOK_URL, tutorialsForLab } from '../tutorials/catalog'
+import { BOOKS } from '../labs/books'
+import { HANDBOOK_URL, primaryById, tutorialsForLab } from '../tutorials/catalog'
 
 const html = (s: string) => ({ __html: s })
 
@@ -51,12 +52,24 @@ export default function LabPage() {
             <ul>{tutorialsForLab(lab.id).map(article => <li key={article.id}><a href={article.href}>{article.title}</a></li>)}</ul>
             <a href={HANDBOOK_URL}>Complete course handbook →</a>
           </div>
-          {lab.reading && (
-            <div className="panel book-connection">
-              <h3>Book connection</h3>
-              <p><b>Petruzella, <i>Programmable Logic Controllers</i></b><br />Sixth edition, McGraw Hill, 2023</p>
-              <p>{lab.reading}</p>
-              <span className="lesson-hint">The exercises here are original; page numbers refer to the printed book.</span>
+          {lab.primary && (
+            <div className="panel citations">
+              <h3>Primary sources</h3>
+              <ul>{lab.primary.map(c => {
+                const ref = primaryById(c.id)
+                return ref && <li key={c.id}><a href={ref.url}>{ref.title}</a><span className="lesson-hint">{c.where}</span></li>
+              })}</ul>
+              <span className="lesson-hint">Free to read: specifications, standards bodies and incident investigators.</span>
+            </div>
+          )}
+          {lab.books && (
+            <div className="panel citations book-connection">
+              <h3>Further reading</h3>
+              <ul>{lab.books.map(c => {
+                const book = BOOKS[c.id]
+                return <li key={c.id}><b>{book.cite}, <i>{'url' in book ? <a href={book.url}>{book.title}</a> : book.title}</i></b>{'license' in book && <span className="badge good">{book.license}</span>}<span className="lesson-hint">{c.where}</span></li>
+              })}</ul>
+              <span className="lesson-hint">The labs are original exercises; page numbers refer to the printed books. Full details are on the <Link to="/tutorials" state={{ scrollTo: 'references' }}>references page</Link>.</span>
             </div>
           )}
           <div className="panel">

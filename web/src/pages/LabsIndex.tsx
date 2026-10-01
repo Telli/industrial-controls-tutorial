@@ -4,7 +4,7 @@ import { LABS, LAB_COUNT, LEARNING_PATH } from '../labs/registry'
 import LabCard, { LAB_TOPICS, LabArtwork } from '../components/LabCard'
 import Icon from '../components/Icon'
 
-const FILTERS = ['All labs', 'Signals & timing', 'Data & protocols', 'Control & systems', 'PLC foundations']
+const FILTERS = ['All labs', 'Signals & timing', 'Data & protocols', 'Control & systems', 'Safety & operations', 'PLC foundations']
 
 export default function LabsIndex() {
   const [filter, setFilter] = useState('All labs')

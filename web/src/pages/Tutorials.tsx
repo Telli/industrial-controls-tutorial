@@ -2,8 +2,9 @@ import { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import Icon from '../components/Icon'
 import {
-  HANDBOOK_URL, PRIMARY_REFERENCES, READING_EDITION_URL, SOURCES_CHECKED_ON, SOURCE_ARTICLES, STUDY_PACK_URL, TUTORIALS,
+  HANDBOOK_URL, PRIMARY_REFERENCES, READING_EDITION_URL, REFERENCES_CHECKED_ON, SOURCES_CHECKED_ON, SOURCE_ARTICLES, STUDY_PACK_URL, TUTORIALS,
 } from '../tutorials/catalog'
+import { BOOKS } from '../labs/books'
 
 const FILTERS = ['All tutorials', 'Foundations', 'Protocols & data', 'Architecture & operations']
 
@@ -45,11 +46,13 @@ export default function Tutorials() {
       <h2 id="references-title">Sources and references</h2>
       <p>The written course is an original English adaptation of <b>Wackysoft’s .NET industrial-controls series</b>, published in Chinese on CNBlogs: nine articles in the original series (S1–S9) and three later troubleshooting posts (S10–S12). Thanks to the author for a practical, well-organized series. The tutorials are not translations; each one summarizes its source in its own References section.</p>
       <ol className="source-list">{SOURCE_ARTICLES.map(s => <li key={s.id}><b>{s.id}</b> · {s.edition?.title ?? 'Source article'} <span>· {s.date} ·</span> <a href={s.url} lang="zh">{s.title}</a></li>)}</ol>
-      <h3>Book</h3>
-      <p>Frank D. Petruzella, <i>Programmable Logic Controllers</i>, sixth edition, McGraw Hill, 2023 (ISBN 978-1-265-15049-5). Labs 05 and 09–13 are original exercises informed by the chapters cited on each lab page. No book content is reproduced.</p>
-      <h3>Technical references</h3>
+      <h3>Books</h3>
+      <p>The labs are original exercises. These books informed them, and each lab page says which part applies. Page numbers refer to the printed editions. Kuphaldt’s book is the only one openly licensed for adaptation; the others are cited, not reproduced.</p>
+      <ol className="source-list">{Object.values(BOOKS).map(b => <li key={b.title}><b>{b.cite}</b>, {'url' in b ? <a href={b.url}><i>{b.title}</i></a> : <i>{b.title}</i>} <span>· {b.detail}{'license' in b ? ` · ${b.license}` : ''}</span></li>)}</ol>
+      <h3>Technical references and primary sources</h3>
+      <p>Specifications, standards guidance and incident investigations that are free to read. Labs cite the relevant section.</p>
       <ol>{PRIMARY_REFERENCES.map(r => <li key={r.id}><a href={r.url}>{r.title}</a> <span>— {r.supports}</span></li>)}</ol>
-      <p className="credit-note">Links checked {SOURCES_CHECKED_ON}.</p>
+      <p className="credit-note">Source articles and references P1–P29 checked {SOURCES_CHECKED_ON}; P30–P36 checked {REFERENCES_CHECKED_ON}. Reference numbers match Appendix B of the handbook.</p>
     </section>
   </div>
 }

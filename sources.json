@@ -1,5 +1,6 @@
 {
   "checked_on": "2026-09-29",
+  "primary_references_checked_on": "2026-10-01",
   "scope": "9 original series articles and 3 subsequent industrial troubleshooting articles",
   "articles": [
     {
@@ -364,6 +365,78 @@
       "title": "OpenClaw.NET MCP roles",
       "url": "https://github.com/clawdotnet/openclaw.net/blob/603b567646423a8090a16836aa155f9b011aaa00/docs/MCPAPP.md",
       "supports": "Distinguishes the gateway MCP server, external MCP client and MCP Apps."
+    },
+    {
+      "id": "P25",
+      "title": "Modbus Application Protocol Specification V1.1b3",
+      "url": "https://www.modbus.org/file/secure/modbusprotocolspecification.pdf",
+      "supports": "Big-endian data encoding (§4.2), data and addressing models (§4.3–4.4), function codes including 05, 15 and 22 Mask Write Register (§6), exception responses (§7)."
+    },
+    {
+      "id": "P26",
+      "title": "MinimalModbus: serial communication",
+      "url": "https://minimalmodbus.readthedocs.io/en/stable/serialcommunication.html",
+      "supports": "Modbus RTU 3.5-character silent interval and the 1.75 ms minimum."
+    },
+    {
+      "id": "P27",
+      "title": "Implementing alarm management per ANSI/ISA-18.2 (Yokogawa, Control Engineering)",
+      "url": "https://www.yokogawa.com/us/library/resources/media-publications/implementing-alarm-management-per-the-ansi-isa-182-standard-control-engineering/",
+      "supports": "Commonly cited alarm-rate benchmarks per operator."
+    },
+    {
+      "id": "P28",
+      "title": "The high performance HMI (ISA / Automation.com)",
+      "url": "https://www.automation.com/article/the-high-performance-hmi",
+      "supports": "Display hierarchy levels and color principles."
+    },
+    {
+      "id": "P29",
+      "title": "Microsoft.Data.Sqlite overview",
+      "url": "https://learn.microsoft.com/en-us/dotnet/standard/data/sqlite/",
+      "supports": "ADO.NET provider used by the Lab 7 writer template."
+    },
+    {
+      "id": "P30",
+      "title": "Modbus Messaging on TCP/IP Implementation Guide V1.0b",
+      "url": "https://www.modbus.org/file/secure/messagingimplementationguide.pdf",
+      "supports": "MODBUS TCP application data unit and MBAP header fields (§3.1.2–3.1.3)."
+    },
+    {
+      "id": "P31",
+      "title": "NIST SP 800-82r3 Guide to Operational Technology (OT) Security",
+      "url": "https://csrc.nist.gov/pubs/sp/800/82/r3/final",
+      "supports": "OT architectures (§2.3), safety instrumented systems and their independence from the BPCS (§2.3.7), defense-in-depth architecture (§5.1.2, §5.2)."
+    },
+    {
+      "id": "P32",
+      "title": "Eclipse Sparkplug Specification 3.0.0",
+      "url": "https://sparkplug.eclipse.org/specification/version/3.0/documents/sparkplug-specification-3.0.0.pdf",
+      "supports": "MQTT topic namespace, birth and death certificates delivered through the MQTT Will message, Protocol Buffers payload (§6.2)."
+    },
+    {
+      "id": "P33",
+      "title": "US NRC NUREG-0700 Rev. 4 Human-System Interface Design Review Guidelines",
+      "url": "https://www.nrc.gov/reading-rm/doc-collections/nuregs/staff/sr0700/r4/index",
+      "supports": "Redundant color coding (1.3.8-10), limit marks (1.1-19), normal range on deviation bars (1.2.4-7), flash coding (1.3.10-9), alarm priority coding (4.2.2-3), invalid and unvalidated data (14.3-3, 14.3-4)."
+    },
+    {
+      "id": "P34",
+      "title": "UK HSE HSG238 Out of control: why control systems go wrong",
+      "url": "https://www.hse.gov.uk/pubns/books/hsg238.htm",
+      "supports": "Analysis of 34 control-system incidents: 44 % of primary causes in specification and 20 % in changes after commissioning (Table 2)."
+    },
+    {
+      "id": "P35",
+      "title": "UK HSE Buncefield investigation and reports",
+      "url": "https://www.hse.gov.uk/comah/buncefield/index.htm",
+      "supports": "December 2005 fuel-depot overfill, explosion and fire; official investigation reports and a review of LOPA studies of overfill protection."
+    },
+    {
+      "id": "P36",
+      "title": "US CSB BP Texas City refinery explosion",
+      "url": "https://www.csb.gov/bp-america-texas-city-refinery-explosion/",
+      "supports": "March 2005 distillation-tower overfill; recommendations on level instrumentation, automatic controls and control-board displays."
     }
   ]
 }

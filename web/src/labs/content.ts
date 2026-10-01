@@ -267,4 +267,48 @@ export const LAB_CONTENT: Record<string, LabContent> = {
       a: 'The lamp itself, or its connection. Voltage present at a device that does not respond points to the device or the wiring right at it.',
     },
   },
+  'safety-systems': {
+    intro: 'Normal control keeps a process where it should be. A safety instrumented system (SIS) is a separate set of sensors, logic and valves whose only job is to bring the process to a safe state when normal control fails.',
+    background: [
+      'Protection is designed in layers: the basic process control system (BPCS), alarms with an operator response, a safety instrumented system, and finally physical protection such as relief valves and bunds. A layer reduces risk only if it fails independently of the others. A safety function that reads the same transmitter as the control system fails along with it, which is why NIST SP 800-82 describes the SIS as often independent of the BPCS.',
+      'An alarm counts as a protection layer only if the operator has time to act. Here the level rises 1 % per second, so an alarm at 90 % leaves 5 seconds before the SIS setpoint. Real processes usually allow longer, but the same arithmetic applies: compare the response time with the time the process allows.',
+      'Trip circuits are normally <b>de-energize to trip</b>. The logic holds the shutoff valve open with power, so any loss of power, broken wire or logic failure closes it. Failures then show up as spurious trips instead of silently disabling the protection.',
+      'A <b>safety integrity level</b> (SIL) states how dependable a safety function must be. In low-demand mode, SIL 1 means an average probability of failure on demand between 0.01 and 0.1, and each level is ten times stricter. Dangerous failures that diagnostics cannot detect are found only by proof testing, so the test interval appears directly in the calculation.',
+      'Voting combines redundant sensors: 1oo2 trips if either of two sensors trips; 2oo3 needs two of three. Redundancy reduces independent random failures but not common-cause ones, such as the same calibration error, the same plugged process connection or the same bypass. In the UK HSE’s analysis of 34 control-system incidents, 44 % of primary causes lay in the specification and 20 % in changes after commissioning, not in subtle hardware faults.',
+    ],
+    terms: [
+      ['BPCS', 'Basic process control system: the everyday control system that runs the process.'],
+      ['SIS / SIF', 'Safety instrumented system; each protective function it performs is a safety instrumented function.'],
+      ['Layer of protection', 'An independent safeguard that can stop a hazard on its own.'],
+      ['PFDavg', 'Average probability that a safety function fails when it is needed.'],
+      ['Proof test', 'A periodic test designed to reveal failures that diagnostics cannot detect.'],
+      ['MooN voting', 'M out of N channels must agree before the system trips.'],
+      ['Common-cause failure', 'One cause that defeats several redundant channels at once; β is the fraction of failures that are common cause.'],
+    ],
+    check: {
+      q: 'In 2oo3 voting, two of the three level switches have failed undetected since the last proof test. What happens on a real high level, and what would have found the problem?',
+      a: 'Only one switch can vote and 2oo3 needs two, so the SIS does not trip. A proof test would have revealed the failed switches; that is why the test interval appears in the PFD calculation.',
+    },
+  },
+  'hmi-design': {
+    intro: 'Operators supervise hundreds of values on screens like these. The display decides what they notice in time, so its design is a safety question, not decoration.',
+    background: [
+      'Many older displays use bright colors for normal states: green for running, red for open or stopped, saturated pipes and backgrounds. When everything is colored, an alarm color has nothing to stand out against. High-performance HMI practice uses a muted gray background and reserves strong color for abnormal conditions.',
+      'Numbers have to be read and compared with limits held in memory. An analog indicator with a shaded normal range and alarm-limit marks (NUREG-0700 guidelines 1.1-19 and 1.2.4-7) shows deviation at a glance, and a short trend shows direction. In this lab a drifting value leaves its normal range about 14 seconds before it alarms; only the analog view shows that early warning.',
+      'Color should never be the only code (NUREG-0700 1.3.8-10). Red–green color-vision deficiency affects roughly one man in twelve, and control-room screens vary. Here, alarm priority is also shown by shape, number and text.',
+      'When communication fails, the last value stays on the screen and looks like a steady process. NUREG-0700 14.3-3 and 14.3-4 call for an indication when data are invalid or could not be validated. Here stale values are hatched, marked with their age and shown as uncertain.',
+      'Flashing should be reserved for items that need urgent attention (NUREG-0700 1.3.10-9). A display that flashes for routine states teaches people to ignore it.',
+    ],
+    terms: [
+      ['HMI', 'Human-machine interface: the screens operators use to monitor and control the process.'],
+      ['High-performance HMI', 'A design approach using muted displays, analog indicators and color reserved for abnormal conditions.'],
+      ['Normal range', 'The band a value should stay within during normal operation, narrower than the alarm limits.'],
+      ['Alarm priority', 'How urgently an alarm needs a response, coded consistently on every display.'],
+      ['Data quality', 'Whether a displayed value is current and valid, or stale, invalid or unvalidated.'],
+    ],
+    check: {
+      q: 'On the legacy display, why might an operator miss the discharge-valve alarm?',
+      a: 'The valve’s normal open state is already shown in red, the same color the display uses for alarms, so the alarm does not stand out. Coding priority with shape and text, and using a muted palette for normal states, fixes this.',
+    },
+  },
 }

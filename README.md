@@ -14,7 +14,7 @@ A free, self-paced course on industrial software for .NET developers. It covers 
 
 ## Interactive website
 
-Open [Industrial Controls Lab](https://ic.agentqi.dev/) for 13 interactive browser labs and the [complete written course](https://ic.agentqi.dev/#/tutorials). The site includes light and dark themes and optional usage analytics. See [`web/README.md`](web/README.md) to run or build it locally.
+Open [Industrial Controls Lab](https://ic.agentqi.dev/) for 15 interactive browser labs and the [complete written course](https://ic.agentqi.dev/#/tutorials). The site includes light and dark themes and optional usage analytics. See [`web/README.md`](web/README.md) to run or build it locally.
 
 ## Who it's for
 

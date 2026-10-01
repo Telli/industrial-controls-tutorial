@@ -1,4 +1,8 @@
 import { lazy, type ComponentType, type LazyExoticComponent } from 'react'
+import type { BookId } from './books'
+
+/** A citation with a pointer to the relevant part: section, chapter or page range. */
+export interface Citation<Id extends string = string> { id: Id; where: string }
 
 export interface LabMeta {
   id: string
@@ -10,7 +14,10 @@ export interface LabMeta {
   tryThis: string[]
   real: string
   companion: string
-  reading?: string
+  /** Books, by id from books.ts. */
+  books?: Citation<BookId>[]
+  /** Free primary sources, by id from sources.json primary_references. */
+  primary?: Citation[]
   Component: LazyExoticComponent<ComponentType>
 }
 
@@ -29,6 +36,7 @@ export const LABS: LabMeta[] = [
     ],
     real: 'Part counting, reject gates and fast digital inputs. Anything an operator would call an "event" should be a counter or a latched bit, never a level you hope to catch.',
     companion: 'Article 05–06 · labs/IndustrialLab/ScanSimulator.cs',
+    primary: [{ id: 'P2', where: 'Sampling and publishing intervals are separate schedules, and the server may revise them.' }],
     Component: lazy(() => import('./ScanCycleLab')),
   },
   {
@@ -45,6 +53,7 @@ export const LABS: LabMeta[] = [
     ],
     real: 'Every gateway and meter integration. Energy meters, flow computers and drives disagree on word order, and a wrong guess still produces a plausible-looking number.',
     companion: 'Article 10 · labs/IndustrialLab/Wire.cs',
+    primary: [{ id: 'P25', where: '§4.2 Data Encoding: big-endian within a register. The data model (§4.3) defines 16-bit registers and leaves multi-register values to the device.' }],
     Component: lazy(() => import('./ByteOrderLab')),
   },
   {
@@ -61,6 +70,7 @@ export const LABS: LabMeta[] = [
     ],
     real: 'Drive status words, alarm bitfields and device fault registers. Half the bugs are off-by-one bit numbering or sign assumptions.',
     companion: 'Article 11 · labs/IndustrialLab/Wire.cs (Bit)',
+    primary: [{ id: 'P25', where: '§6.5 Write Single Coil (05), §6.11 Write Multiple Coils (15) and §6.16 Mask Write Register (22).' }],
     Component: lazy(() => import('./PackedBitsLab')),
   },
   {
@@ -77,6 +87,8 @@ export const LABS: LabMeta[] = [
     ],
     real: 'Any custom driver or simulator. Sleep-based reads work on the bench and fail on a busy plant network.',
     companion: 'Article 12 · labs/IndustrialLab/Wire.cs (ReadFc03Async)',
+    books: [{ id: 'cleary', where: 'Its recipes on cancellation and timeouts apply directly to a read loop that must stop waiting for a missing frame.' }],
+    primary: [{ id: 'P30', where: '§3.1.3 MBAP header: transaction identifier, protocol identifier, length and unit identifier.' }, { id: 'P25', where: '§6.3 Read Holding Registers (1 to 125 registers) and §7 exception responses.' }],
     Component: lazy(() => import('./FramingLab')),
   },
   {
@@ -93,7 +105,7 @@ export const LABS: LabMeta[] = [
     ],
     real: 'The exact shape of the C# lab: the equipment keeps moving while communications are down, so the dashboard must show quality and age, not just a number.',
     companion: 'Article 01, 07 · extended thermal control model',
-    reading: 'Sections 14.3–14.4, pp. 294–298: on/off, proportional and integral control.',
+    books: [{ id: 'petruzella', where: 'Sections 14.3–14.4, pp. 294–298: on/off, proportional and integral control.' }, { id: 'astromHagglund', where: 'The standard reference on integrator windup, anti-windup schemes and bumpless transfer between modes.' }, { id: 'astromMurray', where: 'The PID control chapter; free to read online.' }, { id: 'kuphaldt', where: 'Chapter 29, closed-loop control and PID (free, CC BY 4.0).' }],
     Component: lazy(() => import('./TankLab')),
   },
   {
@@ -110,6 +122,8 @@ export const LABS: LabMeta[] = [
     ],
     real: 'Alarm floods are a leading operator-overload problem. Good limits, deadbands and delays cut nuisance alarms without hiding real ones.',
     companion: 'Article 08 · labs/IndustrialLab/Alarms.cs',
+    books: [{ id: 'alarmHandbook', where: 'Alarm philosophy, rationalization and the alarm-flood problem this lab simulates in miniature.' }],
+    primary: [{ id: 'P33', where: 'Section 4, alarm systems: prioritization (4.1.3) and priority coding (4.2.2-3).' }, { id: 'P27', where: 'Commonly cited ISA-18.2 alarm-rate benchmarks per operator.' }],
     Component: lazy(() => import('./AlarmLab')),
   },
   {
@@ -126,6 +140,8 @@ export const LABS: LabMeta[] = [
     ],
     real: 'Store-and-forward is what makes a historian or MES integration survivable. Duplicates on replay are expected, so consumers must be idempotent.',
     companion: 'Article 03, 08, 09 · labs/IndustrialLab/Outbox.cs',
+    books: [{ id: 'eip', where: 'The Guaranteed Delivery and Idempotent Receiver patterns are the outbox and duplicate check in this lab.' }, { id: 'kleppmann', where: 'Delivery guarantees, duplicates and event time versus processing time.' }],
+    primary: [{ id: 'P31', where: '§2.3 OT architectures and §5.1.2 defense in depth.' }, { id: 'P5', where: 'Delivery semantics, including QoS 1 at-least-once delivery.' }],
     Component: lazy(() => import('./ArchitectureLab')),
   },
   {
@@ -142,6 +158,8 @@ export const LABS: LabMeta[] = [
     ],
     real: 'Real systems are layered: Modbus at the device, OPC UA at the plant, MQTT to the enterprise or cloud.',
     companion: 'Article 02',
+    books: [{ id: 'mahnke', where: 'The OPC UA information model, address space and subscriptions in depth.' }],
+    primary: [{ id: 'P32', where: 'Birth and death certificates and the Protocol Buffers payload (§6.2).' }, { id: 'P5', where: 'MQTT 5 publish/subscribe and QoS levels.' }, { id: 'P25', where: 'The Modbus data model and function codes.' }],
     Component: lazy(() => import('./ProtocolPicker')),
   },
   {
@@ -152,7 +170,8 @@ export const LABS: LabMeta[] = [
     tryThis: ['Press Start, complete a scan, release Start and scan again. The <b>holding branch</b> keeps the motor on.', 'Break the <b>stop wire</b>, then sample, execute and write separately.', 'Jam the contactor and compare <b>Feedback</b> with <b>Command</b> as the holding source.'],
     real: 'An output bit is a request. Feedback is evidence that the contactor operated. Comparing the two reveals faults that a command-only dashboard misses.',
     companion: 'Original motor-control experiment · discrete I/O and ladder logic',
-    reading: 'Sections 5.2, 5.8 and 6.8–6.9, pp. 70–71, 81–82, 105–106: scan, XIC/XIO, holding and interlocking.',
+    books: [{ id: 'petruzella', where: 'Sections 5.2, 5.8 and 6.8–6.9, pp. 70–71, 81–82, 105–106: scan, XIC/XIO, holding and interlocking.' }],
+    primary: [{ id: 'P31', where: '§2.3.7: safety systems are independent from the basic process control system.' }],
     Component: lazy(() => import('./LadderLab')),
   },
   {
@@ -163,7 +182,7 @@ export const LABS: LabMeta[] = [
     tryThis: ['Hold the input on: <b>CTU</b> counts once while the timers accumulate.', 'Turn it off early: <b>TON</b> clears, <b>RTO</b> retains, and <b>TOF</b> starts delaying off.', 'Pause and <b>step 100 ms</b> to inspect EN, TT, DN and the one-shot.'],
     real: 'Machine delays and production counts depend on instruction state across scans. Counting high scans instead of input edges produces wildly wrong totals.',
     companion: 'Original timing workbench · seconds-based teaching model',
-    reading: 'Sections 7.2–7.5 and 8.2, pp. 122–134, 146–153: timer behavior, count-up and one-shot instructions.',
+    books: [{ id: 'petruzella', where: 'Sections 7.2–7.5 and 8.2, pp. 122–134, 146–153: timer behavior, count-up and one-shot instructions.' }],
     Component: lazy(() => import('./TimingLab')),
   },
   {
@@ -174,7 +193,7 @@ export const LABS: LabMeta[] = [
     tryThis: ['Keep a 0–100 °C transmitter at 50 °C, but configure the PLC maximum as <b>200 °C</b>.', 'Compare <b>8, 12 and 16 bits</b>, then add current noise.', 'Open the wire: inspect raw counts, unchecked math and the <b>quality-gated</b> result.'],
     real: 'A correctly decoded, electrically valid register can still be mis-scaled. Calibration and range configuration are part of the data contract.',
     companion: 'Original 4–20 mA experiment · explicit 0–24 mA ADC model',
-    reading: 'Sections 2.3 and 11.6, pp. 22–25, 227–228; section 14.4, p. 295: analog conversion, scaling and live zero.',
+    books: [{ id: 'petruzella', where: 'Sections 2.3 and 11.6, pp. 22–25, 227–228; section 14.4, p. 295: analog conversion, scaling and live zero.' }, { id: 'kuphaldt', where: '§13.1–13.2: 4 to 20 mA current signals and relating them to process variables (free, CC BY 4.0).' }],
     Component: lazy(() => import('./AnalogLab')),
   },
   {
@@ -185,7 +204,7 @@ export const LABS: LabMeta[] = [
     tryThis: ['Start a batch and inspect the <b>output word</b> at each transition.', 'Block the inlet: filling times out instead of starting the mixer on an empty tank.', 'In <b>Part tracking</b>, miss a clock pulse and follow the numbered part to its exit decision.'],
     real: 'A time delay does not prove a process condition, and a stored bit does not know where a product is. Use explicit transition evidence and synchronized tracking.',
     companion: 'Original batch and conveyor models · event-driven sequencing',
-    reading: 'Sections 12.2–12.4, pp. 239–255: sequencer outputs, state charts and bit shift registers.',
+    books: [{ id: 'petruzella', where: 'Sections 12.2–12.4, pp. 239–255: sequencer outputs, state charts and bit shift registers.' }, { id: 'erickson', where: 'Systematic sequential design, including state-based methods and IEC 61131-3 Sequential Function Charts.' }],
     Component: lazy(() => import('./SequenceLab')),
   },
   {
@@ -196,13 +215,37 @@ export const LABS: LabMeta[] = [
     tryThis: ['Collect observations <b>on both sides</b> of a suspected fault.', 'Compare the channel LED with the <b>program tag address</b>.', 'When the output is on but the lamp is dark, inspect the separate <b>load supply</b>.'],
     real: 'Systematic troubleshooting separates wiring, mapping, logic and power faults. A single status indicator cannot prove the whole chain is healthy.',
     companion: 'Four original diagnostic cases · virtual observations only',
-    reading: 'Section 13.9, pp. 275–279: systematic diagnosis and input/output troubleshooting.',
+    books: [{ id: 'petruzella', where: 'Section 13.9, pp. 275–279: systematic diagnosis and input/output troubleshooting.' }],
     Component: lazy(() => import('./TroubleshootingLab')),
+  },
+  {
+    id: 'safety-systems', n: '14', title: 'Safety instrumented systems',
+    blurb: 'Overfill a storage tank through layers of protection. Fail instruments, bypass the SIS and compare voting architectures.',
+    goal: 'See why safety layers must be independent, how trip circuits fail safe, and how redundancy trades failure on demand against spurious trips.',
+    tags: ['SVG'],
+    tryThis: ['Stick <b>LT-1</b> and give the SIS the same transmitter: every layer goes blind.', 'Set the <b>operator response</b> above 5 s: the alarm is no longer a protection layer.', 'Raise <b>β</b> and watch common cause cancel the benefit of 2oo3 voting.'],
+    real: 'Overfills at Buncefield (2005) and Texas City (2005) involved level indication that did not show the true level. Independent sensors, honest proof testing and bypass control are the practical lessons.',
+    companion: 'Original overfill and voting models · IEC 61511 concepts, simplified',
+    books: [{ id: 'gruhn', where: 'Layers of protection, SIL determination, voting architectures and proof testing.' }, { id: 'kuphaldt', where: '§32.6: safety instrumented functions, SIS sensors, logic solvers and final elements, and Safety Integrity Levels (free, CC BY 4.0).' }],
+    primary: [{ id: 'P31', where: '§2.3.7: a SIS is composed of safety instrumented functions and is often independent of the BPCS.' }, { id: 'P34', where: 'Table 2: 44 % of primary causes in specification and 20 % in changes after commissioning, from 34 incidents.' }, { id: 'P35', where: 'Official reports on the 2005 overfill and explosion.' }, { id: 'P36', where: 'Recommendations on level instrumentation and automatic controls to prevent overfilling.' }],
+    Component: lazy(() => import('./SafetyLab')),
+  },
+  {
+    id: 'hmi-design', n: '15', title: 'Operator display design',
+    blurb: 'Find problems on a legacy screen and on a high-performance one. Switch design principles on one at a time and time yourself.',
+    goal: 'Learn which display choices help an operator notice drift, alarms and frozen data, and why color alone is not enough.',
+    tags: ['SVG'],
+    tryThis: ['Play three rounds in <b>legacy</b>, then three in <b>high-performance</b>, and compare your mean times.', 'Turn on only <b>analog indicators</b>: drifts become visible before they alarm.', 'Enable the <b>color-vision simulation</b> in legacy mode and look for the alarm.'],
+    real: 'After the 2005 Texas City explosion, the CSB recommended control-board displays that clearly show a tower’s material balance. What a screen makes obvious decides what operators notice in time.',
+    companion: 'Original pump-station display · high-performance HMI principles',
+    books: [{ id: 'hmiHandbook', where: 'Gray-scale design, analog indicators with normal ranges, and display hierarchy.' }, { id: 'alarmHandbook', where: 'How alarm priority and presentation affect operator response.' }],
+    primary: [{ id: 'P33', where: 'Guidelines 1.3.8-10 (redundant color coding), 1.1-19 (limit marks), 1.2.4-7 (normal range), 1.3.10-9 (flashing), 4.2.2-3 (priority coding), 14.3-3 and 14.3-4 (invalid and unvalidated data).' }, { id: 'P36', where: 'Recommendation to configure control-board displays to show material balance clearly.' }, { id: 'P28', where: 'Display hierarchy levels and color principles from high-performance HMI practice.' }],
+    Component: lazy(() => import('./HmiLab')),
   },
 ]
 
 export const labById = (id: string) => LABS.find((l) => l.id === id)
 
 export const LAB_COUNT = String(LABS.length).padStart(2, '0')
-export const LEARNING_PATH = ['scan-cycle', 'ladder-logic', 'timers-counters', 'analog-scaling', 'tank-3d', 'sequencing', 'troubleshooting']
+export const LEARNING_PATH = ['scan-cycle', 'ladder-logic', 'timers-counters', 'analog-scaling', 'tank-3d', 'sequencing', 'troubleshooting', 'safety-systems']
 

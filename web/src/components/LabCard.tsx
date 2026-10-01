@@ -4,10 +4,11 @@ import Icon from './Icon'
 
 export const LAB_TOPICS: Record<string, string> = {
   'scan-cycle': 'Signals & timing', 'byte-order': 'Data & protocols', 'packed-bits': 'Data & protocols',
-  'tcp-framing': 'Data & protocols', 'tank-3d': 'Control & systems', alarms: 'Signals & timing',
+  'tcp-framing': 'Data & protocols', 'tank-3d': 'Control & systems', alarms: 'Safety & operations',
   architecture: 'Control & systems', 'protocol-picker': 'Data & protocols',
   'ladder-logic': 'PLC foundations', 'timers-counters': 'PLC foundations', 'analog-scaling': 'PLC foundations',
   sequencing: 'Control & systems', troubleshooting: 'Control & systems',
+  'safety-systems': 'Safety & operations', 'hmi-design': 'Safety & operations',
 }
 
 export function LabArtwork({ id }: { id: string }) {
@@ -26,6 +27,8 @@ export function LabArtwork({ id }: { id: string }) {
       {id === 'analog-scaling' && <g stroke="currentColor" strokeWidth="1.5"><path d="M49 20v81h225" opacity=".4" /><path d="M50 96 265 27" strokeWidth="2.5" /><path d="M156 62v39m-107-39h107" strokeDasharray="4 4" opacity=".5" /><circle cx="156" cy="62" r="5" fill="var(--panel)" strokeWidth="2" /><g fill="currentColor" stroke="none" fontFamily="monospace" fontSize="10"><text x="43" y="117">4 mA</text><text x="235" y="117">20 mA</text><text x="166" y="59">12 mA → 50 °C</text></g></g>}
       {id === 'sequencing' && <g stroke="currentColor" strokeWidth="1.5">{['FILL', 'MIX', 'DRAIN'].map((s, i) => <g key={s}><rect x={32 + i * 91} y="43" width="70" height="41" rx="6" fill="currentColor" fillOpacity={i === 1 ? '.14' : '.03'} /><text x={67 + i * 91} y="68" fill="currentColor" stroke="none" textAnchor="middle" fontFamily="monospace" fontSize="11">{s}</text>{i < 2 && <path d={`M${104 + i * 91} 64h15m-5-4 5 4-5 4`} />}</g>)}<path d="M249 85v20H67V86m-4 5 4-5 4 5" opacity=".4" /><text x="158" y="28" fill="currentColor" stroke="none" textAnchor="middle" fontFamily="monospace" fontSize="10">001 → 010 → 100</text></g>}
       {id === 'troubleshooting' && <g stroke="currentColor" strokeWidth="1.5"><rect x="52" y="25" width="147" height="81" rx="7" fill="currentColor" fillOpacity=".03" />{[0, 1, 2].map(i => <g key={i}><circle cx="71" cy={44 + i * 22} r="4" fill="currentColor" fillOpacity={i === 1 ? '.08' : '.6'} /><path d={`M85 ${44 + i * 22}h${i === 1 ? 28 : 73}`} opacity=".5" /></g>)}<circle cx="224" cy="58" r="25" fill="var(--panel)" strokeWidth="2.5" /><path d="m241 77 23 25M213 58h7l4-8 5 16 4-8h6" strokeWidth="2.5" /></g>}
+      {id === 'safety-systems' && <g stroke="currentColor" strokeWidth="1.5"><rect x="128" y="22" width="64" height="88" fill="none" /><rect x="129" y="46" width="62" height="63" fill="currentColor" fillOpacity=".14" stroke="none" />{[30, 40, 50].map(dy => <path key={dy} d={`M122 ${dy}h76`} strokeDasharray="3 4" opacity=".45" />)}<path d="M40 30h88" strokeWidth="3" opacity=".5" /><path d="M66 22l16 16v-16l-16 16Z" fill="currentColor" /><path d="M96 22l16 16v-16l-16 16Z" fill="none" /><path d="M110 116h100" strokeDasharray="5 4" opacity=".5" />{[0, 1, 2].map(i => <circle key={i} cx={232 + i * 18} cy="40" r="6" fill={i === 1 ? 'none' : 'currentColor'} fillOpacity=".5" />)}<text x="226" y="66" fill="currentColor" stroke="none" fontFamily="monospace" fontSize="11">2oo3</text></g>}
+      {id === 'hmi-design' && <g stroke="currentColor" strokeWidth="1.5">{[0, 1, 2].map(i => <g key={i}><rect x={44 + i * 80} y="30" width="70" height="66" rx="4" fill="currentColor" fillOpacity={i === 1 ? '.12' : '.03'} /><path d={`M${52 + i * 80} 80h54`} strokeWidth="6" opacity=".18" /><path d={`M${62 + i * 80} 74v12`} strokeWidth="2" /><path d={`M${52 + i * 80} 62 l12 -6 l12 4 l12 -10 l14 2`} opacity=".6" /></g>)}<path d="M180 40l7 7-7 7-7-7Z" fill="currentColor" stroke="none" /></g>}
     </svg>
   )
 }

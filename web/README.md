@@ -59,14 +59,25 @@ Heavy libraries are code-split: three.js loads for the landing explorer, tank, m
 | 11 Analog signals and scaling | Measurement chain + current gauge | `src/lib/plc.ts` |
 | 12 Sequences and product tracking | 3D batch + conveyor/shift register | `src/lib/plc.ts` |
 | 13 Find the fault | Evidence notebook + diagnostic cases | `src/lib/troubleshoot.ts` |
+| 14 Safety instrumented systems | Overfill layers, trip circuits, voting/PFD chart | `src/lib/safety.ts` |
+| 15 Operator display design | Legacy vs high-performance HMI, timed rounds | `src/lib/hmi.ts` |
 
-The simulation logic lives in `src/lib` (`scan.ts`, `wire.ts`, `alarm.ts`, `plc.ts`, `tank.ts`, `troubleshoot.ts`) and is unit-tested. These are teaching models, not certified control software.
+The simulation logic lives in `src/lib` (`scan.ts`, `wire.ts`, `alarm.ts`, `plc.ts`, `tank.ts`, `troubleshoot.ts`, `safety.ts`, `hmi.ts`) and is unit-tested. These are teaching models, not certified control software.
 
 ## Adding a lab
 
 1. Create `src/labs/MyLab.tsx` with a default-exported component.
 2. Add an entry to `src/labs/registry.tsx` (title, goal, things to try, real-world note). The landing page, index and navigation pick it up automatically.
 3. Add the lab's explanatory text to `src/labs/content.ts`: a plain-language intro, background paragraphs, key terms and a check question. The lab page renders these below the experiment.
+
+## Citations
+
+Each lab can cite books and free primary sources in `src/labs/registry.tsx`:
+
+- `books: [{ id, where }]` uses ids from `src/labs/books.ts`. Give the section, chapter or printed page range in `where`; never invent page numbers for a book you haven't checked.
+- `primary: [{ id, where }]` uses `primary_references` ids from the repository's `sources.json` (the numbering matches Appendix B of the handbook; P30–P36 cover the Modbus TCP guide, NIST SP 800-82r3, Sparkplug 3.0, NUREG-0700 Rev. 4, HSE HSG238, Buncefield and the CSB Texas City investigation). Add a new reference to both places with the next free number.
+
+The lab page renders both lists, and the Tutorials page lists every book and reference.
 
 ## Credits
 

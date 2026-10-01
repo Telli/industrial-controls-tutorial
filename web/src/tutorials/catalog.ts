@@ -36,6 +36,7 @@ const readingsByLab: Record<string, string[]> = {
   'architecture': ['S3', 'S8', 'S9'], 'protocol-picker': ['S2'],
   'ladder-logic': ['S6', 'S7'], 'timers-counters': ['S5', 'S6'],
   'analog-scaling': ['S7', 'S10'], 'sequencing': ['S3', 'S6'], 'troubleshooting': ['S7', 'S9'],
+  'safety-systems': ['S7', 'S9'], 'hmi-design': ['S4', 'S8'],
 }
 export const tutorialsForLab = (id: string) => TUTORIALS.filter(article => readingsByLab[id]?.includes(article.id))
 
@@ -50,3 +51,5 @@ export const SOURCE_ARTICLES = sources.articles.map(source => ({
 }))
 export const PRIMARY_REFERENCES = sources.primary_references
 export const SOURCES_CHECKED_ON = sources.checked_on
+export const REFERENCES_CHECKED_ON = sources.primary_references_checked_on
+export const primaryById = (id: string) => sources.primary_references.find(r => r.id === id)
